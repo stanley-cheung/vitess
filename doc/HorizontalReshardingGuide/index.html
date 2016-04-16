@@ -395,12 +395,12 @@ based on the row&#39;s sharding key.</p></li>
 </ol>
 
 <p>The following command starts the <code class="prettyprint">vtworker</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">vtworker -min_healthy_rdonly_endpoints 1 -cell=&lt;cell name&gt; \
-    SplitClone &lt;keyspace name&gt;/&lt;source shard name&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">vtworker -cell=&lt;cell name&gt; \
+    SplitClone -min_healthy_rdonly_endpoints=1 &lt;keyspace name&gt;/&lt;source shard name&gt;
 </code></pre></div>
 <p>For this example, run this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">vtworker -min_healthy_rdonly_endpoints 1 -cell=&lt;cell name&gt; \
-    SplitClone user_keyspace/0
+<div class="highlight"><pre><code class="language-text" data-lang="text">vtworker -cell=&lt;cell name&gt; \
+    SplitClone -min_healthy_rdonly_endpoints=1 user_keyspace/0
 </code></pre></div>
 <p>The amount of time that the worker takes to complete will depend
 on the size of your dataset. When the process completes, the destination
@@ -439,18 +439,18 @@ during step 3 or step 4.1, the data on the source and destination shards
 might not be equal.</p>
 
 <p>To start the <code class="prettyprint">vtworker</code>, run the following <code class="prettyprint">SplitDiff</code> command:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vtworker -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
-    SplitDiff &lt;keyspace name&gt;/&lt;shard name&gt;
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vtworker -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
+    SplitDiff -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> &lt;keyspace name&gt;/&lt;shard name&gt;
 </code></pre></div>
 <p>The commands for the two new destination shards in this example are shown
 below. You need to complete this process for each destination shard.
 However, you must remove one rdonly tablet from the source shard for each
 diff process that is running. As such, it is recommended to run diffs
 sequentially rather than in parallel.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vtworker -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
-    SplitDiff user_keyspace/-80
-vtworker -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
-    SplitDiff user_keyspace/80-
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vtworker -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
+    SplitDiff -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> user_keyspace/-80
+vtworker -cell<span class="o">=</span>&lt;cell name&gt; <span class="se">\</span>
+    SplitDiff -min_healthy_rdonly_endpoints<span class="o">=</span><span class="m">1</span> user_keyspace/80-
 </code></pre></div>
 <p>The vtworker performs the following tasks:</p>
 

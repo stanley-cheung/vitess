@@ -243,24 +243,35 @@ confirming that the Vitess cluster continues to serve without downtime.</p>
 
 <h2 id="configure-sharding-information">Configure sharding information</h2>
 
-<p>The first step is to tell Vitess the name and type of our
-<a href="http://vitess.io/overview/concepts.html#keyspace-id">keyspace_id</a> column:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh SetKeyspaceShardingInfo test_keyspace keyspace_id uint64
+<p>The first step is to tell Vitess how we want to partition the data.
+We do this by providing a VSchema definition as follows:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;Sharded&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nt">&quot;Vindexes&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;hash&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;hash&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;Tables&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;messages&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;ColVindexes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">&quot;Col&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;hash&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
-<p>This column was added in the original
-<a href="https://github.com/youtube/vitess/blob/master/examples/kubernetes/create_test_table.sql">schema</a>
-for the unsharded example, although it was unnecessary there.
-As a result, the Guestbook app is already sharding-ready,
-so we don&#39;t need to change anything at the app layer to shard the database.</p>
+<p>This says that we want to shard the data by a hash of the <code class="prettyprint">page</code> column.
+In other words, keep each page&#39;s messages together, but spread pages around
+the shards randomly.</p>
 
-<p>If the app hadn&#39;t originally been sharding-ready, we would need to alter
-the tables to add the <em>keyspace_id</em> column, back-fill it with a suitable hash
-of the sharding key, and include the <em>keyspace_id</em> in each query sent to VTGate.</p>
-
-<p>See the <a href="http://vitess.io/user-guide/sharding.html#range-based-sharding">sharding guide</a>
-and the <a href="https://github.com/youtube/vitess/blob/master/examples/kubernetes/guestbook/main.py">Guestbook source</a>
-for more about how this column is used.</p>
-
+<p>We can load this VSchema into Vitess like this:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh SetKeyspaceShardingInfo test_keyspace keyspace_id uint64
+vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ApplyVSchema -vschema <span class="s2">&quot;$(cat vschema.json)&quot;</span> test_keyspace
+</code></pre></div>
 <h2 id="bring-up-tablets-for-new-shards">Bring up tablets for new shards</h2>
 
 <p>In the unsharded example, you started tablets for a shard
@@ -312,16 +323,16 @@ vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh CopySchemaShard 
 we use a special batch process called <code class="prettyprint">vtworker</code> to stream the data from a
 single source to multiple destinations, routing each row based on its
 <em>keyspace_id</em>:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitClone test_keyspace/0
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitClone test_keyspace/0
 <span class="c">### example output:</span>
 <span class="c"># Creating vtworker pod in cell test...</span>
 <span class="c"># pods/vtworker</span>
 <span class="c"># Following vtworker logs until termination...</span>
-<span class="c"># I0627 23:57:51.118768      10 vtworker.go:99] Starting worker...</span>
+<span class="c"># I0416 02:08:59.952805       9 instance.go:115] Starting worker...</span>
 <span class="c"># ...</span>
 <span class="c"># State: done</span>
 <span class="c"># Success:</span>
-<span class="c"># messages: copy done, copied 3 rows</span>
+<span class="c"># messages: copy done, copied 11 rows</span>
 <span class="c"># Deleting vtworker pod...</span>
 <span class="c"># pods/vtworker</span>
 </code></pre></div>
@@ -365,12 +376,12 @@ vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ExecuteFetchAsDb
 <p>The <code class="prettyprint">vtworker</code> batch process has another mode that will compare the source
 and destination to ensure all the data is present and correct.
 The following commands will run a diff for each destination shard:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitDiff test_keyspace/-80
-vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitDiff test_keyspace/80-
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitDiff test_keyspace/-80
+vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitDiff test_keyspace/80-
 </code></pre></div>
 <p>If any discrepancies are found, they will be printed.
 If everything is good, you should see something like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Table messages checks out (4 rows processed, 1072961 qps)
+<div class="highlight"><pre><code class="language-text" data-lang="text">I0416 02:10:56.927313      10 split_diff.go:496] Table messages checks out (4 rows processed, 1072961 qps)
 </code></pre></div>
 <h2 id="switch-over-to-new-shards">Switch over to new shards</h2>
 
