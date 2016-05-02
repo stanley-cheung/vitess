@@ -36,10 +36,10 @@
 
     <!-- metadata -->
     <meta name="og:title" content="Vitess / Backing Up Data"/>
-    <meta name="og:image" content="/images/120x120.gif"/>
+    <meta name="og:image" content="/images/vitess-logo-large-cropped-2.png"/>
     <meta name="og:description" content="Servers and tools that scale MySQL databases for the web in cloud architectures or on dedicated hardware."/>
 
-    <!-- GA -->
+    
     <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -49,13 +49,14 @@
   ga('send', 'pageview');
 </script>
 
+    
   </head>
   <body class="docs" id="top_of_page">
 
     <span id="toc-depth" data-toc-depth="h2,h3"></span>
 
 
-  	<nav id="common-nav" class="navbar navbar-fixed-top inverse">
+    <nav id="common-nav" class="navbar navbar-fixed-top inverse">
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -75,7 +76,7 @@
       <ul class="nav navbar-nav navbar-right" id="standard-menu-links">
         <li><a href="/overview/">Guides</a></li>
         <li><a href="/reference/vitess-api.html">Reference</a></li>
-        <li><a href="http://blog.vitess.io/">Blog</a></li>
+        <li><a href="http://blog.vitess.io">Blog</a></li>
         <li><a href="https://github.com/youtube/vitess"><i class="fa fa-github"></i> GitHub</a></li>
         <!-- Hide link to blog unless we have actual posts -->
         <!-- <li><a href="/blog/" title="">Blog</a></li> -->
@@ -85,6 +86,7 @@
           <h4 class="arrow-r no-top-margin">Overview</h4>
           <ul style="display: none">
             <li><a href="/overview/">What is Vitess</a></li>
+            <li><a href="/overview/scaling-mysql.html">Scaling MySQL with Vitess</a></li>
             <li><a href="/overview/concepts.html">Key Concepts</a></li>
           </ul>
         </li>
@@ -104,7 +106,7 @@
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
             <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
-              <ul style="list-style-type: none">
+              <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
                 <li style="padding-bottom: 0"><a href="/user-guide/sharding-kubernetes.html">Sharding in Kubernetes (Codelab)</a></li>
               </ul>
@@ -129,18 +131,17 @@
 
         <div>
           <form method="get" action="/search/">
-            <input name="q" type="text" placeholder="Search">
+            <input id="search-form" name="q" type="text" placeholder="Search">
           </form>
         </div>
 
-        <li><a href="https://github.com/youtube/vitess" style="font-size: 18px; margin-left: 0.25em;"><i class="fa fa-github"></i> GitHub</a></li>
+        <li><a href="https://github.com/youtube/vitess" id="collapsed-left-menu-repo-link"><i class="fa fa-github"></i> GitHub</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
-
-
+    
 <div id="masthead">
   <div class="container">
     <div class="row">
@@ -154,12 +155,13 @@
 
 <div class="container">
     <div class="row scroll-margin" id="toc-content-row">
-    <div class="col-md-3" id="leftCol">
+    <div class="col-md-2" id="leftCol">
       <ul class="nav nav-stacked mobile-left-nav-menu" id="sidebar">
                 <li class="submenu">
           <h4 class="arrow-r no-top-margin">Overview</h4>
           <ul style="display: none">
             <li><a href="/overview/">What is Vitess</a></li>
+            <li><a href="/overview/scaling-mysql.html">Scaling MySQL with Vitess</a></li>
             <li><a href="/overview/concepts.html">Key Concepts</a></li>
           </ul>
         </li>
@@ -179,7 +181,7 @@
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
             <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
-              <ul style="list-style-type: none">
+              <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
                 <li style="padding-bottom: 0"><a href="/user-guide/sharding-kubernetes.html">Sharding in Kubernetes (Codelab)</a></li>
               </ul>
@@ -204,13 +206,13 @@
 
         <div>
           <form method="get" action="/search/">
-            <input name="q" type="text" placeholder="Search">
+            <input id="search-form" name="q" type="text" placeholder="Search">
           </form>
         </div>
 
       </ul>
     </div>
-    <div class="col-md-2" id="rightCol">
+    <div class="col-md-3" id="rightCol">
       <div class="nav nav-stacked" id="tocSidebar">
         <div id="toc"></div>
       </div>
@@ -428,6 +430,16 @@ usage of the process during the backup or restore process.</p>
   </div>
 
 </div>
+
+    <div class="page-spacer"></div>
+    <footer role="contentinfo" id="site-footer">
+  <nav role="navigation" class="menu bottom-menu">
+    
+    <a href="https://groups.google.com/forum/#!forum/vitess" target="_blank">Contact: vitess@googlegroups.com</a>&nbsp;&nbsp;<b>·</b>&nbsp;&nbsp;
+    <a href="https://groups.google.com/forum/#!forum/vitess-announce" target="_blank">Announcements</a>&nbsp;&nbsp;<b>·</b>&nbsp;&nbsp;
+    &#169; 2016 <a href="/">Vitess</a> powered by <a href="http://www.google.com">Google Inc</a>
+  </nav>
+</footer>
 
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
