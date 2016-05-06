@@ -233,7 +233,7 @@ have left the cluster running.</p>
 
 <p>We will follow a process similar to the one in the general
 <a href="http://vitess.io/user-guide/horizontal-sharding.html">Horizontal Sharding</a>
-guide, except that here we&#39;ll give the exact commands you&#39;ll need to do it for
+guide, except that here we&#39;ll give the commands you&#39;ll need to do it for
 the example Vitess cluster in Kubernetes.</p>
 
 <p>Since Vitess makes <a href="http://vitess.io/user-guide/sharding.html">sharding</a>
@@ -322,10 +322,10 @@ original shard to the two new ones, starting with the schema:</p>
 vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh CopySchemaShard test_keyspace/0 test_keyspace/80-
 </code></pre></div>
 <p>Next we copy the data. Since the amount of data to copy can be very large,
-we use a special batch process called <code class="prettyprint">vtworker</code> to stream the data from a
+we use a special batch process called <em>vtworker</em> to stream the data from a
 single source to multiple destinations, routing each row based on its
 <em>keyspace_id</em>:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitClone test_keyspace/0
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitClone test_keyspace/0
 <span class="c">### example output:</span>
 <span class="c"># Creating vtworker pod in cell test...</span>
 <span class="c"># pods/vtworker</span>
@@ -353,7 +353,7 @@ will be served only by the remaining, un-paused <em>rdonly</em> tablets.</p>
 
 <h2 id="check-filtered-replication">Check filtered replication</h2>
 
-<p>Once the copy from the paused snapshot finishes, <code class="prettyprint">vtworker</code> turns on
+<p>Once the copy from the paused snapshot finishes, <em>vtworker</em> turns on
 <a href="http://vitess.io/user-guide/sharding.html#filtered-replication">filtered replication</a>
 from the source shard to each destination shard. This allows the destination
 shards to catch up on updates that have continued to flow in from the app since
@@ -375,11 +375,11 @@ vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ExecuteFetchAsDb
 
 <h2 id="check-copied-data-integrity">Check copied data integrity</h2>
 
-<p>The <code class="prettyprint">vtworker</code> batch process has another mode that will compare the source
+<p>The <em>vtworker</em> batch process has another mode that will compare the source
 and destination to ensure all the data is present and correct.
 The following commands will run a diff for each destination shard:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitDiff test_keyspace/-80
-vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh -use_v3_resharding_mode SplitDiff test_keyspace/80-
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitDiff test_keyspace/-80
+vitess/examples/kubernetes<span class="nv">$ </span>./sharded-vtworker.sh SplitDiff test_keyspace/80-
 </code></pre></div>
 <p>If any discrepancies are found, they will be printed.
 If everything is good, you should see something like this:</p>

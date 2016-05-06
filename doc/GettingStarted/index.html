@@ -551,7 +551,7 @@ variable to point to the <code class="prettyprint">zk-client-conf.json</code> fi
 ZooKeeper server addresses for each cell.</p></li>
 <li><p><strong>Start vtctld</strong></p>
 
-<p>The <code class="prettyprint">vtctld</code> server provides a web interface that
+<p>The <em>vtctld</em> server provides a web interface that
 displays all of the coordination information stored in ZooKeeper.</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./vtctld-up.sh
 <span class="c"># Starting vtctld</span>
@@ -559,17 +559,20 @@ displays all of the coordination information stored in ZooKeeper.</p>
 <span class="c"># Send commands with: vtctlclient -server localhost:15999 ...</span>
 </code></pre></div>
 <p>Open <code class="prettyprint">http://localhost:15000</code> to verify that
-<code class="prettyprint">vtctld</code> is running. There won&#39;t be any information
+<em>vtctld</em> is running. There won&#39;t be any information
 there yet, but the menu should come up, which indicates that
-<code class="prettyprint">vtctld</code> is running.</p>
+<em>vtctld</em> is running.</p>
 
-<p>The <code class="prettyprint">vtctld</code> server also accepts commands from the <code class="prettyprint">vtctlclient</code> tool,
+<p>The <em>vtctld</em> server also accepts commands from the <code class="prettyprint">vtctlclient</code> tool,
 which is used to administer the cluster. Note that the port for RPCs
 (in this case <code class="prettyprint">15999</code>) is different from the web UI port (<code class="prettyprint">15000</code>).
 These ports can be configured with command-line flags, as demonstrated
 in <code class="prettyprint">vtctld-up.sh</code>.</p>
+
+<p>For convenience, we&#39;ll use the <code class="prettyprint">lvtctl.sh</code> script in example commands,
+to avoid having to type the <em>vtctld</em> address every time.</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># List available commands</span>
-<span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 Help
+vitess/examples/local<span class="nv">$ </span>./lvtctl.sh <span class="nb">help</span>
 </code></pre></div></li>
 <li><p><strong>Start vttablets</strong></p>
 
@@ -588,7 +591,7 @@ set at the top of the script file.</p>
 <span class="c"># Starting vttablet for test-0000000102...</span>
 <span class="c"># Access tablet test-0000000102 at http://localhost:15102/debug/status</span>
 </code></pre></div>
-<p>After this command completes, refresh the <code class="prettyprint">vtctld</code> web UI, and you should
+<p>After this command completes, refresh the <em>vtctld</em> web UI, and you should
 see a keyspace named <code class="prettyprint">test_keyspace</code> with a single shard named <code class="prettyprint">0</code>.
 This is what an unsharded keyspace looks like.</p>
 
@@ -599,16 +602,6 @@ you haven&#39;t initialized them yet.</p>
 <p>You can also click the <strong>STATUS</strong> link on each tablet to be taken to its
 status page, showing more details on its operation. Every Vitess server has
 a status page served at <code class="prettyprint">/debug/status</code> on its web port.</p></li>
-<li><p><strong>Initialize the new keyspace</strong></p>
-
-<p>By launching tablets assigned to a nonexistent keyspace, we&#39;ve essentially
-created a new keyspace. To complete the initialization of the
-<a href="http://vitess.io/doc/TopologyService/#local-data">local topology data</a>,
-perform a keyspace rebuild:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 RebuildKeyspaceGraph test_keyspace
-</code></pre></div>
-<p><strong>Note:</strong> Many <code class="prettyprint">vtctlclient</code> commands yield no output if
-they run successfully.</p></li>
 <li><p><strong>Initialize MySQL databases</strong></p>
 
 <p>Next, designate one of the tablets to be the initial master.
@@ -616,7 +609,7 @@ Vitess will automatically connect the other slaves&#39; mysqld instances so
 that they start replicating from the master&#39;s mysqld.
 This is also when the default database is created. Since our keyspace is
 named <code class="prettyprint">test_keyspace</code>, the MySQL database will be named <code class="prettyprint">vt_test_keyspace</code>.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 InitShardMaster -force test_keyspace/0 <span class="nb">test</span>-0000000100
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh InitShardMaster -force test_keyspace/0 <span class="nb">test</span>-100
 <span class="c">### example output:</span>
 <span class="c"># master-elect tablet test-0000000100 is not the shard master, proceeding anyway as -force was used</span>
 <span class="c"># master-elect tablet test-0000000100 is not a master in the shard, proceeding anyway as -force was used</span>
@@ -628,12 +621,12 @@ to bypass the usual sanity checks that would apply if this wasn&#39;t a
 brand new shard.</p>
 
 <p>After running this command, go back to the <strong>Shard Status</strong> page
-in the <code class="prettyprint">vtctld</code> web interface. When you refresh the
-page, you should see that one <code class="prettyprint">vttablet</code> is the master
+in the <em>vtctld</em> web interface. When you refresh the
+page, you should see that one <em>vttablet</em> is the master
 and the other two are replicas.</p>
 
 <p>You can also see this on the command line:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 ListAllTablets <span class="nb">test</span>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh ListAllTablets <span class="nb">test</span>
 <span class="c">### example output:</span>
 <span class="c"># test-0000000100 test_keyspace 0 master localhost:15100 localhost:33100 []</span>
 <span class="c"># test-0000000101 test_keyspace 0 replica localhost:15101 localhost:33101 []</span>
@@ -645,14 +638,15 @@ and the other two are replicas.</p>
 tablets in a keyspace. The following command creates the table defined in
 the <code class="prettyprint">create_test_table.sql</code> file:</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># Make sure to run this from the examples/local dir, so it finds the file.</span>
-vitess/examples/local<span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 ApplySchema -sql <span class="s2">&quot;$(cat create_test_table.sql)&quot;</span> test_keyspace
+vitess/examples/local<span class="nv">$ </span>./lvtctl.sh ApplySchema -sql <span class="s2">&quot;$(cat create_test_table.sql)&quot;</span> test_keyspace
 </code></pre></div>
 <p>The SQL to create the table is shown below:</p>
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test_table</span> <span class="p">(</span>
-  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
-  <span class="n">msg</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">250</span><span class="p">),</span>
-  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">)</span> <span class="n">Engine</span><span class="o">=</span><span class="n">InnoDB</span>
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">messages</span> <span class="p">(</span>
+  <span class="n">page</span> <span class="nb">BIGINT</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="n">UNSIGNED</span><span class="p">,</span>
+  <span class="n">time_created_ns</span> <span class="nb">BIGINT</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="n">UNSIGNED</span><span class="p">,</span>
+  <span class="n">message</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10000</span><span class="p">),</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">time_created_ns</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span>
 </code></pre></div></li>
 <li><p><strong>Take a backup</strong></p>
 
@@ -662,24 +656,24 @@ will be used to automatically restore any additional replicas that you run,
 before they connect themselves to the master and catch up on replication.
 If an existing tablet goes down and comes back up without its data, it will
 also automatically restore from the latest backup and then resume replication.</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 Backup <span class="nb">test</span>-0000000101
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh Backup <span class="nb">test</span>-0000000102
 </code></pre></div>
 <p>After the backup completes, you can list available backups for the shard:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nv">$ $VTROOT</span>/bin/vtctlclient -server localhost:15999 ListBackups test_keyspace/0
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh ListBackups test_keyspace/0
 <span class="c">### example output:</span>
-<span class="c"># 2015-10-21.042940.test-0000000104</span>
+<span class="c"># 2016-05-06.072724.test-0000000102</span>
 </code></pre></div>
 <p><strong>Note:</strong> In this single-server example setup, backups are stored at
 <code class="prettyprint">$VTDATAROOT/backups</code>. In a multi-server deployment, you would usually mount
 an NFS directory there. You can also change the location by setting the
-<code class="prettyprint">-file_backup_storage_root</code> flag on <code class="prettyprint">vtctld</code> and <code class="prettyprint">vttablet</code>, as demonstrated
+<code class="prettyprint">-file_backup_storage_root</code> flag on <em>vtctld</em> and <em>vttablet</em>, as demonstrated
 in <code class="prettyprint">vtctld-up.sh</code> and <code class="prettyprint">vttablet-up.sh</code>.</p></li>
 <li><p><strong>Start vtgate</strong></p>
 
-<p>Vitess uses <code class="prettyprint">vtgate</code> to route each client query to
-the correct <code class="prettyprint">vttablet</code>. This local example runs a
-single <code class="prettyprint">vtgate</code> instance, though a real deployment
-would likely run multiple <code class="prettyprint">vtgate</code> instances to share
+<p>Vitess uses <em>vtgate</em> to route each client query to
+the correct <em>vttablet</em>. This local example runs a
+single <em>vtgate</em> instance, though a real deployment
+would likely run multiple <em>vtgate</em> instances to share
 the load.</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./vtgate-up.sh
 </code></pre></div></li>
@@ -688,7 +682,7 @@ the load.</p>
 <h3 id="run-a-client-application">Run a Client Application</h3>
 
 <p>The <code class="prettyprint">client.py</code> file is a simple sample application
-that connects to <code class="prettyprint">vtgate</code> and executes some queries.
+that connects to <em>vtgate</em> and executes some queries.
 To run it, you need to either:</p>
 
 <ul>
@@ -701,11 +695,25 @@ sets up the environment and then runs <code class="prettyprint">client.py</code>
 <span class="c">### example output:</span>
 <span class="c"># Inserting into master...</span>
 <span class="c"># Reading from master...</span>
-<span class="c"># (1L, &#39;V is for speed&#39;)</span>
-<span class="c"># Reading from replica...</span>
-<span class="c"># (1L, &#39;V is for speed&#39;)</span>
+<span class="c"># (5L, 1462510331910124032L, &#39;V is for speed&#39;)</span>
+<span class="c"># (15L, 1462519383758071808L, &#39;V is for speed&#39;)</span>
+<span class="c"># (42L, 1462510369213753088L, &#39;V is for speed&#39;)</span>
+<span class="c"># ...</span>
 </code></pre></div></li>
 </ul>
+
+<p>There are also sample clients in the same directory for Java, PHP, and Go.
+See the comments at the top of each sample file for usage instructions.</p>
+
+<h3 id="try-vitess-resharding">Try Vitess resharding</h3>
+
+<p>Now that you have a full Vitess stack running, you may want to go on to the
+<a href="http://vitess.io/user-guide/horizontal-sharding.html">Horizontal Sharding</a>
+guide to try out
+<a href="http://vitess.io/user-guide/sharding.html#resharding">dynamic resharding</a>.</p>
+
+<p>If so, you can skip the tear-down since the sharding guide picks up right here.
+If not, continue to the clean-up steps below.</p>
 
 <h3 id="tear-down-the-cluster">Tear down the cluster</h3>
 
