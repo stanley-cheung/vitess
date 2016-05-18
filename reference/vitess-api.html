@@ -313,7 +313,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteBatchKeyspaceIdsRequest is the payload to ExecuteBatchKeyspaceId</p>
+<p>ExecuteBatchKeyspaceIdsRequest is the payload to ExecuteBatchKeyspaceId.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -341,13 +341,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>as_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">as_transaction will execute the queries in this batch in a single transaction per shard, created for this purpose. (this can be seen as adding a &#39;begin&#39; before and &#39;commit&#39; after the queries). Only makes sense if tablet_type is master. If set, the Session is ignored.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteBatchKeyspaceIdsResponse is the returned value from ExecuteBatchKeyspaceId</p>
+<p>ExecuteBatchKeyspaceIdsResponse is the returned value from ExecuteBatchKeyspaceId.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -377,7 +377,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteEntityIdsRequest is the payload to ExecuteEntityIds</p>
+<p>ExecuteEntityIdsRequest is the payload to ExecuteEntityIds.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -401,15 +401,15 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>entity_column_name</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">entity_column_name is the column name to use.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>entity_keyspace_ids</code> <br>list &lt;<a href="#executeentityidsrequest.entityid">EntityId</a>&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">entity_keyspace_ids are pairs of entity_column_name values associated with its corresponding keyspace_id.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
@@ -417,7 +417,7 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>not_in_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">not_in_transaction is deprecated and should not be used.</td>
 </tr>
 </tbody></table>
 
@@ -434,72 +434,22 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>xid_type</code> <br><a href="#executeentityidsrequest.entityid.type">Type</a></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>type</code> <br><a href="#query.type">query.Type</a></td>
+<td style="text-align: left">Type defines the various supported data types in bind vars and query results.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>xid_bytes</code> <br>bytes</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>xid_int</code> <br>int64</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>xid_uint</code> <br>uint64</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>xid_float</code> <br>double</td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>value</code> <br>bytes</td>
+<td style="text-align: left">value is the value for the entity. Not set if type is NULL_TYPE.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace_id</code> <br>bytes</td>
-<td style="text-align: left"></td>
-</tr>
-</tbody></table>
-
-<h4 id="enums">Enums</h4>
-
-<h5 id="executeentityidsrequest-entityid-type">ExecuteEntityIdsRequest.EntityId.Type</h5>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Value</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><code>TYPE_NULL</code></td>
-<td style="text-align: left"><code>0</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_BYTES</code></td>
-<td style="text-align: left"><code>1</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_INT</code></td>
-<td style="text-align: left"><code>2</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_UINT</code></td>
-<td style="text-align: left"><code>3</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_FLOAT</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace_id is the associated keyspace_id for the entity.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteEntityIdsResponse is the returned value from ExecuteEntityIds</p>
+<p>ExecuteEntityIdsResponse is the returned value from ExecuteEntityIds.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -529,7 +479,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteKeyRangesRequest is the payload to ExecuteKeyRanges</p>
+<p>ExecuteKeyRangesRequest is the payload to ExecuteKeyRanges.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -553,7 +503,7 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>key_ranges</code> <br>list &lt;<a href="#topodata.keyrange">topodata.KeyRange</a>&gt;</td>
@@ -565,13 +515,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>not_in_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">not_in_transaction is deprecated and should not be used.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteKeyRangesResponse is the returned value from ExecuteKeyRanges</p>
+<p>ExecuteKeyRangesResponse is the returned value from ExecuteKeyRanges.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -601,7 +551,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteKeyspaceIdsRequest is the payload to ExecuteKeyspaceIds</p>
+<p>ExecuteKeyspaceIdsRequest is the payload to ExecuteKeyspaceIds.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -625,11 +575,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace_ids</code> <br>list &lt;bytes&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace_ids contains the list of keyspace_ids affected by this query. Will be used to find the shards to send the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
@@ -637,13 +587,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>not_in_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">not_in_transaction is deprecated and should not be used.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteKeyspaceIdsResponse is the returned value from ExecuteKeyspaceIds</p>
+<p>ExecuteKeyspaceIdsResponse is the returned value from ExecuteKeyspaceIds.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -673,7 +623,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>StreamExecuteKeyRangesRequest is the payload to StreamExecuteKeyRanges</p>
+<p>StreamExecuteKeyRangesRequest is the payload to StreamExecuteKeyRanges.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -693,7 +643,7 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>key_ranges</code> <br>list &lt;<a href="#topodata.keyrange">topodata.KeyRange</a>&gt;</td>
@@ -707,7 +657,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>StreamExecuteKeyRangesResponse is the returned value from StreamExecuteKeyRanges</p>
+<p>StreamExecuteKeyRangesResponse is the returned value from StreamExecuteKeyRanges.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -717,10 +667,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 <tr>
 <td style="text-align: left"><code>result</code> <br><a href="#query.queryresult">query.QueryResult</a></td>
 <td style="text-align: left">QueryResult is returned by Execute and ExecuteStream.  As returned by Execute, len(fields) is always equal to len(row) (for each row in rows).  As returned by StreamExecute, the first QueryResult has the fields set, and subsequent QueryResult have rows set. And as Execute, len(QueryResult[0].fields) is always equal to len(row) (for each row in rows for each QueryResult in QueryResult[1:]).</td>
@@ -733,7 +679,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>StreamExecuteKeyspaceIdsRequest is the payload to StreamExecuteKeyspaceIds</p>
+<p>StreamExecuteKeyspaceIdsRequest is the payload to StreamExecuteKeyspaceIds.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -753,11 +699,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace_ids</code> <br>list &lt;bytes&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace_ids contains the list of keyspace_ids affected by this query. Will be used to find the shards to send the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
@@ -767,7 +713,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>StreamExecuteKeyspaceIdsResponse is the returned value from StreamExecuteKeyspaceIds</p>
+<p>StreamExecuteKeyspaceIdsResponse is the returned value from StreamExecuteKeyspaceIds.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -777,10 +723,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 <tr>
 <td style="text-align: left"><code>result</code> <br><a href="#query.queryresult">query.QueryResult</a></td>
 <td style="text-align: left">QueryResult is returned by Execute and ExecuteStream.  As returned by Execute, len(fields) is always equal to len(row) (for each row in rows).  As returned by StreamExecute, the first QueryResult has the fields set, and subsequent QueryResult have rows set. And as Execute, len(QueryResult[0].fields) is always equal to len(row) (for each row in rows for each QueryResult in QueryResult[1:]).</td>
@@ -795,7 +737,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>BeginRequest is the payload to Begin</p>
+<p>BeginRequest is the payload to Begin.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -813,7 +755,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>BeginResponse is the returned value from Begin</p>
+<p>BeginResponse is the returned value from Begin.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -823,10 +765,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 <tr>
 <td style="text-align: left"><code>session</code> <br><a href="#session">Session</a></td>
 <td style="text-align: left">Session objects are session cookies and are invalidated on use. Query results will contain updated session values. Their content should be opaque to the user.</td>
@@ -839,7 +777,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>CommitRequest is the payload to Commit</p>
+<p>CommitRequest is the payload to Commit.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -861,7 +799,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>CommitResponse is the returned value from Commit</p>
+<p>CommitResponse is the returned value from Commit.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -871,10 +809,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 </tbody></table>
 
 <h3 id="rollback">Rollback</h3>
@@ -883,7 +817,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>RollbackRequest is the payload to Rollback</p>
+<p>RollbackRequest is the payload to Rollback.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -905,7 +839,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>RollbackResponse is the returned value from Rollback</p>
+<p>RollbackResponse is the returned value from Rollback.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -915,10 +849,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 </tbody></table>
 
 <h2 id="custom-sharding">Custom Sharding</h2>
@@ -957,13 +887,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>as_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">as_transaction will execute the queries in this batch in a single transaction per shard, created for this purpose. (this can be seen as adding a &#39;begin&#39; before and &#39;commit&#39; after the queries). Only makes sense if tablet_type is master. If set, the Session is ignored.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteBatchShardsResponse is the returned value from ExecuteBatchShards</p>
+<p>ExecuteBatchShardsResponse is the returned value from ExecuteBatchShards.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -993,7 +923,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteShardsRequest is the payload to ExecuteShards</p>
+<p>ExecuteShardsRequest is the payload to ExecuteShards.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1017,11 +947,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>shards</code> <br>list &lt;string&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">shards to target the query to. A DML can only target one shard.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
@@ -1029,13 +959,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>not_in_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">not_in_transaction is deprecated and should not be used.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteShardsResponse is the returned value from ExecuteShards</p>
+<p>ExecuteShardsResponse is the returned value from ExecuteShards.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1065,7 +995,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>StreamExecuteShardsRequest is the payload to StreamExecuteShards</p>
+<p>StreamExecuteShardsRequest is the payload to StreamExecuteShards.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1085,11 +1015,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>shards</code> <br>list &lt;string&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">shards to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
@@ -1099,7 +1029,7 @@
 
 <h4 id="response">Response</h4>
 
-<p>StreamExecuteShardsResponse is the returned value from StreamExecuteShards</p>
+<p>StreamExecuteShardsResponse is the returned value from StreamExecuteShards.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1109,10 +1039,6 @@
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
-<tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
 <tr>
 <td style="text-align: left"><code>result</code> <br><a href="#query.queryresult">query.QueryResult</a></td>
 <td style="text-align: left">QueryResult is returned by Execute and ExecuteStream.  As returned by Execute, len(fields) is always equal to len(row) (for each row in rows).  As returned by StreamExecute, the first QueryResult has the fields set, and subsequent QueryResult have rows set. And as Execute, len(QueryResult[0].fields) is always equal to len(row) (for each row in rows for each QueryResult in QueryResult[1:]).</td>
@@ -1127,7 +1053,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>SplitQueryRequest is the payload to SplitQuery</p>
+<p>SplitQueryRequest is the payload to SplitQuery.  SplitQuery takes a &quot;SELECT&quot; query and generates a list of queries called &quot;query-parts&quot;. Each query-part consists of the original query with an added WHERE clause that restricts the query-part to operate only on rows whose values in the the columns listed in the &quot;split_column&quot; field of the request (see below) are in a particular range.  It is guaranteed that the set of rows obtained from executing each query-part on a database snapshot and merging (without deduping) the results is equal to the set of rows obtained from executing the original query on the same snapshot with the rows containing NULL values in any of the split_column&#39;s excluded.  This is typically called by the MapReduce master when reading from Vitess. There it&#39;s desirable that the sets of rows returned by the query-parts have roughly the same size.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1143,25 +1069,37 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>query</code> <br><a href="#query.boundquery">query.BoundQuery</a></td>
 <td style="text-align: left">BoundQuery is a query with its bind variables</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>split_column</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>split_column</code> <br>list &lt;string&gt;</td>
+<td style="text-align: left">Each generated query-part will be restricted to rows whose values in the columns listed in this field are in a particular range. The list of columns named here must be a prefix of the list of columns defining some index or primary key of the table referenced in &#39;query&#39;. For many tables using the primary key columns (in order) is sufficient and this is the default if this field is omitted. See the comment on the &#39;algorithm&#39; field for more restrictions and information.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>split_count</code> <br>int64</td>
+<td style="text-align: left">You can specify either an estimate of the number of query-parts to generate or an estimate of the number of rows each query-part should return. Thus, exactly one of split_count or num_rows_per_query_part should be nonzero. The non-given parameter is calculated from the given parameter using the formula: split_count * num_rows_per_query_pary = table_size, where table_size is an approximation of the number of rows in the table. Note that if &quot;split_count&quot; is given it is regarded as an estimate. The number of query-parts returned may differ slightly (in particular, if it&#39;s not a whole multiple of the number of vitess shards).</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>num_rows_per_query_part</code> <br>int64</td>
 <td style="text-align: left"></td>
+</tr>
+<tr>
+<td style="text-align: left"><code>algorithm</code> <br>query.SplitQueryRequest.Algorithm</td>
+<td style="text-align: left">The algorithm to use to split the query. The split algorithm is performed on each database shard in parallel. The lists of query-parts generated by the shards are merged and returned to the caller. Two algorithms are supported: EQUAL_SPLITS If this algorithm is selected then only the first &#39;split_column&#39; given is used (or the first primary key column if the &#39;split_column&#39; field is empty). In the rest of this algorithm&#39;s description, we refer to this column as &quot;the split column&quot;. The split column must have numeric type (integral or floating point). The algorithm works by taking the interval [min, max], where min and max are the minimum and maximum values of the split column in the table-shard, respectively, and partitioning it into &#39;split_count&#39; sub-intervals of equal size. The added WHERE clause of each query-part restricts that part to rows whose value in the split column belongs to a particular sub-interval. This is fast, but requires that the distribution of values of the split column be uniform in [min, max] for the number of rows returned by each query part to be roughly the same. FULL_SCAN If this algorithm is used then the split_column must be the primary key columns (in order). This algorithm performs a full-scan of the table-shard referenced in &#39;query&#39; to get &quot;boundary&quot; rows that are num_rows_per_query_part apart when the table is ordered by the columns listed in &#39;split_column&#39;. It then restricts each query-part to the rows located between two successive boundary rows. This algorithm supports multiple split_column&#39;s of any type, but is slower than EQUAL_SPLITS.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>use_split_query_v2</code> <br>bool</td>
+<td style="text-align: left">Whether to use the new split-query code that supports multiple split-columns and the FULL_SCAN algorithm. This is a temporary field which aids in the migration of SplitQuery to the new code. to the SplitQuery version 2.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>SplitQueryResponse is the returned value from SplitQuery</p>
+<p>SplitQueryResponse is the returned value from SplitQuery.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1173,7 +1111,7 @@
 </thead><tbody>
 <tr>
 <td style="text-align: left"><code>splits</code> <br>list &lt;<a href="#splitqueryresponse.part">Part</a>&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">splits contains the queries to run to fetch the entire data set.</td>
 </tr>
 </tbody></table>
 
@@ -1191,7 +1129,7 @@
 </thead><tbody>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>key_ranges</code> <br>list &lt;<a href="#topodata.keyrange">topodata.KeyRange</a>&gt;</td>
@@ -1215,15 +1153,15 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>key_range_part</code> <br><a href="#splitqueryresponse.keyrangepart">KeyRangePart</a></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">key_range_part is set if the query should be executed by ExecuteKeyRanges.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>shard_part</code> <br><a href="#splitqueryresponse.shardpart">ShardPart</a></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">shard_part is set if the query should be executed by ExecuteShards.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>size</code> <br>int64</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">size is the approximate number of rows this query will return.</td>
 </tr>
 </tbody></table>
 
@@ -1239,11 +1177,11 @@
 </thead><tbody>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>shards</code> <br>list &lt;string&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">shards to target the query to.</td>
 </tr>
 </tbody></table>
 
@@ -1255,7 +1193,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>GetSrvKeyspaceRequest is the payload to GetSrvKeyspace</p>
+<p>GetSrvKeyspaceRequest is the payload to GetSrvKeyspace.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1267,13 +1205,13 @@
 </thead><tbody>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace name to fetch.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>GetSrvKeyspaceResponse is the returned value from GetSrvKeyspace</p>
+<p>GetSrvKeyspaceResponse is the returned value from GetSrvKeyspace.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1297,7 +1235,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>ExecuteRequest is the payload to Execute</p>
+<p>ExecuteRequest is the payload to Execute.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1325,13 +1263,17 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>not_in_transaction</code> <br>bool</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">not_in_transaction is deprecated and should not be used.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>keyspace</code> <br>string</td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>ExecuteResponse is the returned value from Execute</p>
+<p>ExecuteResponse is the returned value from Execute.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1361,7 +1303,7 @@
 
 <h4 id="request">Request</h4>
 
-<p>StreamExecuteRequest is the payload to StreamExecute</p>
+<p>StreamExecuteRequest is the payload to StreamExecute.</p>
 
 <h5 id="parameters">Parameters</h5>
 
@@ -1383,11 +1325,15 @@
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
 <td style="text-align: left">TabletType represents the type of a given tablet.</td>
 </tr>
+<tr>
+<td style="text-align: left"><code>keyspace</code> <br>string</td>
+<td style="text-align: left">keyspace to target the query to.</td>
+</tr>
 </tbody></table>
 
 <h4 id="response">Response</h4>
 
-<p>StreamExecuteResponse is the returned value from StreamExecute</p>
+<p>StreamExecuteResponse is the returned value from StreamExecute.</p>
 
 <h5 id="properties">Properties</h5>
 
@@ -1398,16 +1344,170 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>error</code> <br><a href="#vtrpc.rpcerror">vtrpc.RPCError</a></td>
-<td style="text-align: left">RPCError is an application-level error structure returned by VtTablet (and passed along by VtGate if appropriate). We use this so the clients don&#39;t have to parse the error messages, but instead can depend on the value of the code.</td>
-</tr>
-<tr>
 <td style="text-align: left"><code>result</code> <br><a href="#query.queryresult">query.QueryResult</a></td>
 <td style="text-align: left">QueryResult is returned by Execute and ExecuteStream.  As returned by Execute, len(fields) is always equal to len(row) (for each row in rows).  As returned by StreamExecute, the first QueryResult has the fields set, and subsequent QueryResult have rows set. And as Execute, len(QueryResult[0].fields) is always equal to len(row) (for each row in rows for each QueryResult in QueryResult[1:]).</td>
 </tr>
 </tbody></table>
 
 <h2 id="enums">Enums</h2>
+
+<h3 id="query-type">query.Type</h3>
+
+<p>Type defines the various supported data types in bind vars and query results.</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Value</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code>NULL_TYPE</code></td>
+<td style="text-align: left"><code>0</code></td>
+<td style="text-align: left">NULL_TYPE specifies a NULL type.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>INT8</code></td>
+<td style="text-align: left"><code>257</code></td>
+<td style="text-align: left">INT8 specifies a TINYINT type. Properties: 1, IsNumber.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>UINT8</code></td>
+<td style="text-align: left"><code>770</code></td>
+<td style="text-align: left">UINT8 specifies a TINYINT UNSIGNED type. Properties: 2, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>INT16</code></td>
+<td style="text-align: left"><code>259</code></td>
+<td style="text-align: left">INT16 specifies a SMALLINT type. Properties: 3, IsNumber.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>UINT16</code></td>
+<td style="text-align: left"><code>772</code></td>
+<td style="text-align: left">UINT16 specifies a SMALLINT UNSIGNED type. Properties: 4, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>INT24</code></td>
+<td style="text-align: left"><code>261</code></td>
+<td style="text-align: left">INT24 specifies a MEDIUMINT type. Properties: 5, IsNumber.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>UINT24</code></td>
+<td style="text-align: left"><code>774</code></td>
+<td style="text-align: left">UINT24 specifies a MEDIUMINT UNSIGNED type. Properties: 6, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>INT32</code></td>
+<td style="text-align: left"><code>263</code></td>
+<td style="text-align: left">INT32 specifies a INTEGER type. Properties: 7, IsNumber.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>UINT32</code></td>
+<td style="text-align: left"><code>776</code></td>
+<td style="text-align: left">UINT32 specifies a INTEGER UNSIGNED type. Properties: 8, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>INT64</code></td>
+<td style="text-align: left"><code>265</code></td>
+<td style="text-align: left">INT64 specifies a BIGINT type. Properties: 9, IsNumber.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>UINT64</code></td>
+<td style="text-align: left"><code>778</code></td>
+<td style="text-align: left">UINT64 specifies a BIGINT UNSIGNED type. Properties: 10, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>FLOAT32</code></td>
+<td style="text-align: left"><code>1035</code></td>
+<td style="text-align: left">FLOAT32 specifies a FLOAT type. Properties: 11, IsFloat.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>FLOAT64</code></td>
+<td style="text-align: left"><code>1036</code></td>
+<td style="text-align: left">FLOAT64 specifies a DOUBLE or REAL type. Properties: 12, IsFloat.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>TIMESTAMP</code></td>
+<td style="text-align: left"><code>2061</code></td>
+<td style="text-align: left">TIMESTAMP specifies a TIMESTAMP type. Properties: 13, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>DATE</code></td>
+<td style="text-align: left"><code>2062</code></td>
+<td style="text-align: left">DATE specifies a DATE type. Properties: 14, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>TIME</code></td>
+<td style="text-align: left"><code>2063</code></td>
+<td style="text-align: left">TIME specifies a TIME type. Properties: 15, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>DATETIME</code></td>
+<td style="text-align: left"><code>2064</code></td>
+<td style="text-align: left">DATETIME specifies a DATETIME type. Properties: 16, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>YEAR</code></td>
+<td style="text-align: left"><code>785</code></td>
+<td style="text-align: left">YEAR specifies a YEAR type. Properties: 17, IsNumber, IsUnsigned.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>DECIMAL</code></td>
+<td style="text-align: left"><code>18</code></td>
+<td style="text-align: left">DECIMAL specifies a DECIMAL or NUMERIC type. Properties: 18, None.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>TEXT</code></td>
+<td style="text-align: left"><code>6163</code></td>
+<td style="text-align: left">TEXT specifies a TEXT type. Properties: 19, IsQuoted, IsText.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>BLOB</code></td>
+<td style="text-align: left"><code>10260</code></td>
+<td style="text-align: left">BLOB specifies a BLOB type. Properties: 20, IsQuoted, IsBinary.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>VARCHAR</code></td>
+<td style="text-align: left"><code>6165</code></td>
+<td style="text-align: left">VARCHAR specifies a VARCHAR type. Properties: 21, IsQuoted, IsText.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>VARBINARY</code></td>
+<td style="text-align: left"><code>10262</code></td>
+<td style="text-align: left">VARBINARY specifies a VARBINARY type. Properties: 22, IsQuoted, IsBinary.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>CHAR</code></td>
+<td style="text-align: left"><code>6167</code></td>
+<td style="text-align: left">CHAR specifies a CHAR type. Properties: 23, IsQuoted, IsText.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>BINARY</code></td>
+<td style="text-align: left"><code>10264</code></td>
+<td style="text-align: left">BINARY specifies a BINARY type. Properties: 24, IsQuoted, IsBinary.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>BIT</code></td>
+<td style="text-align: left"><code>2073</code></td>
+<td style="text-align: left">BIT specifies a BIT type. Properties: 25, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>ENUM</code></td>
+<td style="text-align: left"><code>2074</code></td>
+<td style="text-align: left">ENUM specifies an ENUM type. Properties: 26, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>SET</code></td>
+<td style="text-align: left"><code>2075</code></td>
+<td style="text-align: left">SET specifies a SET type. Properties: 27, IsQuoted.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>TUPLE</code></td>
+<td style="text-align: left"><code>28</code></td>
+<td style="text-align: left">TUPLE specifies a a tuple. This cannot be returned in a QueryResult, but it can be sent as a bind var. Properties: 28, None.</td>
+</tr>
+</tbody></table>
 
 <h3 id="topodata-keyspaceidtype">topodata.KeyspaceIdType</h3>
 
@@ -1451,67 +1551,52 @@
 <tr>
 <td style="text-align: left"><code>UNKNOWN</code></td>
 <td style="text-align: left"><code>0</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>IDLE</code></td>
-<td style="text-align: left"><code>1</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">UNKNOWN is not a valid value.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>MASTER</code></td>
-<td style="text-align: left"><code>2</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>1</code></td>
+<td style="text-align: left">MASTER is the master server for the shard. Only MASTER allows DMLs.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>REPLICA</code></td>
+<td style="text-align: left"><code>2</code></td>
+<td style="text-align: left">REPLICA is a slave type. It is used to serve live traffic. A REPLICA can be promoted to MASTER. A demoted MASTER will go to REPLICA.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>RDONLY</code></td>
+<td style="text-align: left"><code>3</code></td>
+<td style="text-align: left">RDONLY (old name) / BATCH (new name) is used to serve traffic for long-running jobs. It is a separate type from REPLICA so long-running queries don&#39;t affect web-like traffic.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>BATCH</code></td>
 <td style="text-align: left"><code>3</code></td>
 <td style="text-align: left"></td>
 </tr>
 <tr>
-<td style="text-align: left"><code>RDONLY</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>BATCH</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
 <td style="text-align: left"><code>SPARE</code></td>
-<td style="text-align: left"><code>5</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>4</code></td>
+<td style="text-align: left">SPARE is a type of servers that cannot serve queries, but is available in case an extra server is needed.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>EXPERIMENTAL</code></td>
-<td style="text-align: left"><code>6</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>SCHEMA_UPGRADE</code></td>
-<td style="text-align: left"><code>7</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>5</code></td>
+<td style="text-align: left">EXPERIMENTAL is like SPARE, except it can serve queries. This type can be used for usages not planned by Vitess, like online export to another storage engine.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>BACKUP</code></td>
-<td style="text-align: left"><code>8</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>6</code></td>
+<td style="text-align: left">BACKUP is the type a server goes to when taking a backup. No queries can be served in BACKUP mode.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>RESTORE</code></td>
-<td style="text-align: left"><code>9</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>7</code></td>
+<td style="text-align: left">RESTORE is the type a server uses when restoring a backup, at startup time.  No queries can be served in RESTORE mode.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>WORKER</code></td>
-<td style="text-align: left"><code>10</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>SCRAP</code></td>
-<td style="text-align: left"><code>11</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>8</code></td>
+<td style="text-align: left">WORKER is the type a server goes into when used by a vtworker process to perform an offline action. It is a serving type (as the vtworker processes may need queries to run). In this state, this tablet is dedicated to the vtworker process that uses it.</td>
 </tr>
 </tbody></table>
 
@@ -1529,12 +1614,12 @@
 <tr>
 <td style="text-align: left"><code>SUCCESS</code></td>
 <td style="text-align: left"><code>0</code></td>
-<td style="text-align: left">SUCCESS is returned from a successful call</td>
+<td style="text-align: left">SUCCESS is returned from a successful call.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>CANCELLED</code></td>
 <td style="text-align: left"><code>1</code></td>
-<td style="text-align: left">CANCELLED means that the context was cancelled (and noticed in the app layer, as opposed to the RPC layer)</td>
+<td style="text-align: left">CANCELLED means that the context was cancelled (and noticed in the app layer, as opposed to the RPC layer).</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>UNKNOWN_ERROR</code></td>
@@ -1554,7 +1639,7 @@
 <tr>
 <td style="text-align: left"><code>INTEGRITY_ERROR</code></td>
 <td style="text-align: left"><code>5</code></td>
-<td style="text-align: left">INTEGRITY_ERROR is returned on integrity error from MySQL, usually due to duplicate primary keys</td>
+<td style="text-align: left">INTEGRITY_ERROR is returned on integrity error from MySQL, usually due to duplicate primary keys.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>PERMISSION_DENIED</code></td>
@@ -1579,7 +1664,7 @@
 <tr>
 <td style="text-align: left"><code>INTERNAL_ERROR</code></td>
 <td style="text-align: left"><code>10</code></td>
-<td style="text-align: left">INTERNAL_ERRORs are problems that only the server can fix, not the client. These errors are not due to a query itself, but rather due to the state of the system. Generally, we don&#39;t expect the errors to go away by themselves, but they may go away after human intervention. Examples of scenarios where INTERNAL_ERROR is returned: 1. Something is not configured correctly internally. 2. A necessary resource is not available, and we don&#39;t expect it to become available by itself. 3. A sanity check fails 4. Some other internal error occurs Clients should not retry immediately, as there is little chance of success. However, it&#39;s acceptable for retries to happen internally, for example to multiple backends, in case only a subset of backend are not functional.</td>
+<td style="text-align: left">INTERNAL_ERRORs are problems that only the server can fix, not the client. These errors are not due to a query itself, but rather due to the state of the system. Generally, we don&#39;t expect the errors to go away by themselves, but they may go away after human intervention. Examples of scenarios where INTERNAL_ERROR is returned: 1. Something is not configured correctly internally. 2. A necessary resource is not available, and we don&#39;t expect it to become available by itself. 3. A sanity check fails. 4. Some other internal error occurs. Clients should not retry immediately, as there is little chance of success. However, it&#39;s acceptable for retries to happen internally, for example to multiple backends, in case only a subset of backend are not functional.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>TRANSIENT_ERROR</code></td>
@@ -1613,11 +1698,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace_ids</code> <br>list &lt;bytes&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace_ids contains the list of keyspace_ids affected by this query. Will be used to find the shards to send the query to.</td>
 </tr>
 </tbody></table>
 
@@ -1639,11 +1724,11 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>keyspace</code> <br>string</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">keyspace to target the query to.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>shards</code> <br>list &lt;string&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">shards to target the query to. A DML can only target one shard.</td>
 </tr>
 </tbody></table>
 
@@ -1693,7 +1778,7 @@
 
 <h3 id="query-bindvariable">query.BindVariable</h3>
 
-<p>BindVariable represents a single bind variable in a Query</p>
+<p>BindVariable represents a single bind variable in a Query.</p>
 
 <h4 id="properties">Properties</h4>
 
@@ -1704,98 +1789,16 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>type</code> <br><a href="#bindvariable.type">Type</a></td>
+<td style="text-align: left"><code>type</code> <br><a href="#query.type">Type</a></td>
 <td style="text-align: left"></td>
 </tr>
 <tr>
-<td style="text-align: left"><code>value_bytes</code> <br>bytes</td>
-<td style="text-align: left">Depending on type, only one value below is set.</td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_int</code> <br>int64</td>
+<td style="text-align: left"><code>value</code> <br>bytes</td>
 <td style="text-align: left"></td>
 </tr>
 <tr>
-<td style="text-align: left"><code>value_uint</code> <br>uint64</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_float</code> <br>double</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_bytes_list</code> <br>list &lt;bytes&gt;</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_int_list</code> <br>list &lt;int64&gt;</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_uint_list</code> <br>list &lt;uint64&gt;</td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>value_float_list</code> <br>list &lt;double&gt;</td>
-<td style="text-align: left"></td>
-</tr>
-</tbody></table>
-
-<h4 id="enums">Enums</h4>
-
-<h5 id="bindvariable-type">BindVariable.Type</h5>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Value</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><code>TYPE_NULL</code></td>
-<td style="text-align: left"><code>0</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_BYTES</code></td>
-<td style="text-align: left"><code>1</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_INT</code></td>
-<td style="text-align: left"><code>2</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_UINT</code></td>
-<td style="text-align: left"><code>3</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_FLOAT</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_BYTES_LIST</code></td>
-<td style="text-align: left"><code>5</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_INT_LIST</code></td>
-<td style="text-align: left"><code>6</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_UINT_LIST</code></td>
-<td style="text-align: left"><code>7</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_FLOAT_LIST</code></td>
-<td style="text-align: left"><code>8</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>values</code> <br>list &lt;<a href="#query.value">Value</a>&gt;</td>
+<td style="text-align: left">Value represents a typed value.</td>
 </tr>
 </tbody></table>
 
@@ -1812,12 +1815,12 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>sql</code> <br>bytes</td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>sql</code> <br>string</td>
+<td style="text-align: left">sql is the SQL query to execute</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>bind_variables</code> <br>map &lt;string, <a href="#query.bindvariable">BindVariable</a>&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">bind_variables is a map of all bind variables to expand in the query</td>
 </tr>
 </tbody></table>
 
@@ -1838,255 +1841,8 @@
 <td style="text-align: left">name of the field as returned by mysql C API</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>type</code> <br><a href="#field.type">Type</a></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>flags</code> <br>int64</td>
-<td style="text-align: left">flags is essentially a bitset<Flag>.</td>
-</tr>
-</tbody></table>
-
-<h4 id="enums">Enums</h4>
-
-<h5 id="field-flag">Field.Flag</h5>
-
-<p>Flag contains the MySQL field flags bitset values e.g. to distinguish between signed and unsigned integer.  These numbers should exactly match values defined in dist/mysql-5.1.52/include/mysql_com.h</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Value</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><code>VT_ZEROVALUE_FLAG</code></td>
-<td style="text-align: left"><code>0</code></td>
-<td style="text-align: left">ZEROVALUE_FLAG is not part of the MySQL specification and only used in unit tests.</td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_NOT_NULL_FLAG</code></td>
-<td style="text-align: left"><code>1</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_PRI_KEY_FLAG</code></td>
-<td style="text-align: left"><code>2</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_UNIQUE_KEY_FLAG</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_MULTIPLE_KEY_FLAG</code></td>
-<td style="text-align: left"><code>8</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_BLOB_FLAG</code></td>
-<td style="text-align: left"><code>16</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_UNSIGNED_FLAG</code></td>
-<td style="text-align: left"><code>32</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_ZEROFILL_FLAG</code></td>
-<td style="text-align: left"><code>64</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_BINARY_FLAG</code></td>
-<td style="text-align: left"><code>128</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_ENUM_FLAG</code></td>
-<td style="text-align: left"><code>256</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_AUTO_INCREMENT_FLAG</code></td>
-<td style="text-align: left"><code>512</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_TIMESTAMP_FLAG</code></td>
-<td style="text-align: left"><code>1024</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_SET_FLAG</code></td>
-<td style="text-align: left"><code>2048</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_NO_DEFAULT_VALUE_FLAG</code></td>
-<td style="text-align: left"><code>4096</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_ON_UPDATE_NOW_FLAG</code></td>
-<td style="text-align: left"><code>8192</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>VT_NUM_FLAG</code></td>
-<td style="text-align: left"><code>32768</code></td>
-<td style="text-align: left"></td>
-</tr>
-</tbody></table>
-
-<h5 id="field-type">Field.Type</h5>
-
-<p>Type follows enum_field_types from mysql.h.</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Value</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><code>TYPE_DECIMAL</code></td>
-<td style="text-align: left"><code>0</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_TINY</code></td>
-<td style="text-align: left"><code>1</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_SHORT</code></td>
-<td style="text-align: left"><code>2</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_LONG</code></td>
-<td style="text-align: left"><code>3</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_FLOAT</code></td>
-<td style="text-align: left"><code>4</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_DOUBLE</code></td>
-<td style="text-align: left"><code>5</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_NULL</code></td>
-<td style="text-align: left"><code>6</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_TIMESTAMP</code></td>
-<td style="text-align: left"><code>7</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_LONGLONG</code></td>
-<td style="text-align: left"><code>8</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_INT24</code></td>
-<td style="text-align: left"><code>9</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_DATE</code></td>
-<td style="text-align: left"><code>10</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_TIME</code></td>
-<td style="text-align: left"><code>11</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_DATETIME</code></td>
-<td style="text-align: left"><code>12</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_YEAR</code></td>
-<td style="text-align: left"><code>13</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_NEWDATE</code></td>
-<td style="text-align: left"><code>14</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_VARCHAR</code></td>
-<td style="text-align: left"><code>15</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_BIT</code></td>
-<td style="text-align: left"><code>16</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_NEWDECIMAL</code></td>
-<td style="text-align: left"><code>246</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_ENUM</code></td>
-<td style="text-align: left"><code>247</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_SET</code></td>
-<td style="text-align: left"><code>248</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_TINY_BLOB</code></td>
-<td style="text-align: left"><code>249</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_MEDIUM_BLOB</code></td>
-<td style="text-align: left"><code>250</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_LONG_BLOB</code></td>
-<td style="text-align: left"><code>251</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_BLOB</code></td>
-<td style="text-align: left"><code>252</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_VAR_STRING</code></td>
-<td style="text-align: left"><code>253</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_STRING</code></td>
-<td style="text-align: left"><code>254</code></td>
-<td style="text-align: left"></td>
-</tr>
-<tr>
-<td style="text-align: left"><code>TYPE_GEOMETRY</code></td>
-<td style="text-align: left"><code>255</code></td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>type</code> <br><a href="#query.type">Type</a></td>
+<td style="text-align: left">vitess-defined type. Conversion function is in sqltypes package.</td>
 </tr>
 </tbody></table>
 
@@ -2133,8 +1889,12 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>values</code> <br>list &lt;bytes&gt;</td>
-<td style="text-align: left"></td>
+<td style="text-align: left"><code>lengths</code> <br>list &lt;sint64&gt;</td>
+<td style="text-align: left">lengths contains the length of each value in values. A length of -1 means that the field is NULL. While reading values, you have to accummulate the length to know the offset where the next value begins in values.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>values</code> <br>bytes</td>
+<td style="text-align: left">values contains a concatenation of all values in the row.</td>
 </tr>
 </tbody></table>
 
@@ -2161,6 +1921,28 @@
 <tr>
 <td style="text-align: left"><code>tablet_type</code> <br><a href="#topodata.tablettype">topodata.TabletType</a></td>
 <td style="text-align: left">TabletType represents the type of a given tablet.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-value">query.Value</h3>
+
+<p>Value represents a typed value.</p>
+
+<h4 id="properties">Properties</h4>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code>type</code> <br><a href="#query.type">Type</a></td>
+<td style="text-align: left"></td>
+</tr>
+<tr>
+<td style="text-align: left"><code>value</code> <br>bytes</td>
+<td style="text-align: left"></td>
 </tr>
 </tbody></table>
 

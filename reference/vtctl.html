@@ -1209,7 +1209,7 @@
 <tr>
 <td style="text-align: left">tablet_type</td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet (use unknown to use sessionId)</td>
+<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 </tbody></table>
 
@@ -1226,7 +1226,6 @@
 
 <ul>
 <li>the <code>&lt;tablet_alias&gt;</code> argument is required for the <code>&lt;VtTabletBegin&gt;</code> command This error occurs if the command is not called with exactly one argument.</li>
-<li>cannot get EndPoint from tablet record: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 <li>Begin failed: %v</li>
 </ul>
@@ -1266,7 +1265,7 @@
 <tr>
 <td style="text-align: left">tablet_type</td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet (use unknown to use sessionId)</td>
+<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 </tbody></table>
 
@@ -1284,7 +1283,6 @@
 
 <ul>
 <li>the <code>&lt;tablet_alias&gt;</code> and <code>&lt;transaction_id&gt;</code> arguments are required for the <code>&lt;VtTabletCommit&gt;</code> command This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>cannot get EndPoint from tablet record: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 </ul>
 
@@ -1328,7 +1326,7 @@
 <tr>
 <td style="text-align: left">tablet_type</td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet (use unknown to use sessionId)</td>
+<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 <tr>
 <td style="text-align: left">transaction_id</td>
@@ -1351,7 +1349,6 @@
 
 <ul>
 <li>the <code>&lt;tablet_alias&gt;</code> and <code>&lt;sql&gt;</code> arguments are required for the <code>&lt;VtTabletExecute&gt;</code> command This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>cannot get EndPoint from tablet record: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 <li>Execute failed: %v</li>
 </ul>
@@ -1391,7 +1388,7 @@
 <tr>
 <td style="text-align: left">tablet_type</td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet (use unknown to use sessionId)</td>
+<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 </tbody></table>
 
@@ -1409,7 +1406,6 @@
 
 <ul>
 <li>the <code>&lt;tablet_alias&gt;</code> and <code>&lt;transaction_id&gt;</code> arguments are required for the <code>&lt;VtTabletRollback&gt;</code> command This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>cannot get EndPoint from tablet record: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 </ul>
 
@@ -1453,7 +1449,6 @@
 
 <ul>
 <li>The <code>&lt;tablet alias&gt;</code> argument is required for the <code>&lt;VtTabletStreamHealth&gt;</code> command. This error occurs if the command is not called with exactly one argument.</li>
-<li>cannot get EndPoint from tablet record: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 <li>stream ended early: %v</li>
 </ul>
@@ -1919,46 +1914,8 @@
 <h2 id="serving-graph">Serving Graph</h2>
 
 <ul>
-<li><a href="#getendpoints">GetEndPoints</a></li>
 <li><a href="#getsrvkeyspace">GetSrvKeyspace</a></li>
 <li><a href="#getsrvkeyspacenames">GetSrvKeyspaceNames</a></li>
-<li><a href="#getsrvshard">GetSrvShard</a></li>
-</ul>
-
-<h3 id="getendpoints">GetEndPoints</h3>
-
-<p>Outputs a JSON structure that contains information about the EndPoints.</p>
-
-<h4 id="example">Example</h4>
-
-<pre class="command-example">GetEndPoints &lt;cell&gt; &lt;keyspace/shard&gt; &lt;tablet type&gt;</pre>
-
-<h4 id="arguments">Arguments</h4>
-
-<ul>
-<li><code>&lt;cell&gt;</code> &ndash; Required. A cell is a location for a service. Generally, a cell resides in only one cluster. In Vitess, the terms &quot;cell&quot; and &quot;data center&quot; are interchangeable. The argument value is a string that does not contain whitespace.</li>
-<li><code>&lt;keyspace/shard&gt;</code> &ndash; Required. The name of a sharded database that contains one or more tables as well as the shard associated with the command. The keyspace must be identified by a string that does not contain whitepace, while the shard is typically identified by a string in the format <code>&lt;range start&gt;-&lt;range end&gt;</code>.</li>
-<li><p><code>&lt;tablet type&gt;</code> &ndash; Required. The vttablet&#39;s role. Valid values are:</p>
-
-<ul>
-<li><code>backup</code> &ndash; A slaved copy of data that is offline to queries other than for backup purposes</li>
-<li><code>batch</code> &ndash; A slaved copy of data for OLAP load patterns (typically for MapReduce jobs)</li>
-<li><code>experimental</code> &ndash; A slaved copy of data that is ready but not serving query traffic. The value indicates a special characteristic of the tablet that indicates the tablet should not be considered a potential master. Vitess also does not worry about lag for experimental tablets when reparenting.</li>
-<li><code>master</code> &ndash; A primary copy of data</li>
-<li><code>rdonly</code> &ndash; A slaved copy of data for OLAP load patterns</li>
-<li><code>replica</code> &ndash; A slaved copy of data ready to be promoted to master</li>
-<li><code>restore</code> &ndash; A tablet that is restoring from a snapshot. Typically, this happens at tablet startup, then it goes to its right state.</li>
-<li><code>schema_apply</code> &ndash; A slaved copy of data that had been serving query traffic but that is now applying a schema change. Following the change, the tablet will revert to its serving type.</li>
-<li><code>snapshot_source</code> &ndash; A slaved copy of data where mysqld is <b>not</b> running and where Vitess is serving data files to clone slaves. Use this command to enter this mode: <pre>vtctl Snapshot -server-mode ...</pre> Use this command to exit this mode: <pre>vtctl SnapshotSourceEnd ...</pre></li>
-<li><code>spare</code> &ndash; A slaved copy of data that is ready but not serving query traffic. The data could be a potential master tablet.</li>
-<li><code>worker</code> &ndash; A tablet that is in use by a vtworker process. The tablet is likely lagging in replication.</li>
-</ul></li>
-</ul>
-
-<h4 id="errors">Errors</h4>
-
-<ul>
-<li>The <code>&lt;cell&gt;</code>, <code>&lt;keyspace/shard&gt;</code>, and <code>&lt;tablet type&gt;</code> arguments are required for the <code>&lt;GetEndPoints&gt;</code> command. This error occurs if the command is not called with exactly 3 arguments.</li>
 </ul>
 
 <h3 id="getsrvkeyspace">GetSrvKeyspace</h3>
@@ -2000,27 +1957,6 @@
 
 <ul>
 <li>The <code>&lt;cell&gt;</code> argument is required for the <code>&lt;GetSrvKeyspaceNames&gt;</code> command. This error occurs if the command is not called with exactly one argument.</li>
-</ul>
-
-<h3 id="getsrvshard">GetSrvShard</h3>
-
-<p>Outputs a JSON structure that contains information about the SrvShard.</p>
-
-<h4 id="example">Example</h4>
-
-<pre class="command-example">GetSrvShard &lt;cell&gt; &lt;keyspace/shard&gt;</pre>
-
-<h4 id="arguments">Arguments</h4>
-
-<ul>
-<li><code>&lt;cell&gt;</code> &ndash; Required. A cell is a location for a service. Generally, a cell resides in only one cluster. In Vitess, the terms &quot;cell&quot; and &quot;data center&quot; are interchangeable. The argument value is a string that does not contain whitespace.</li>
-<li><code>&lt;keyspace/shard&gt;</code> &ndash; Required. The name of a sharded database that contains one or more tables as well as the shard associated with the command. The keyspace must be identified by a string that does not contain whitepace, while the shard is typically identified by a string in the format <code>&lt;range start&gt;-&lt;range end&gt;</code>.</li>
-</ul>
-
-<h4 id="errors">Errors</h4>
-
-<ul>
-<li>The <code>&lt;cell&gt;</code> and <code>&lt;keyspace/shard&gt;</code> arguments are required for the <code>&lt;GetSrvShard&gt;</code> command. This error occurs if the command is not called with exactly 2 arguments.</li>
 </ul>
 
 <h2 id="shards">Shards</h2>
@@ -2697,7 +2633,6 @@
 <li>The <code>&lt;keyspace/shard&gt;</code> argument is required for the <code>&lt;WaitForFilteredReplication&gt;</code> command. This error occurs if the command is not called with exactly one argument.</li>
 <li>shard %v/%v has no source shard</li>
 <li>shard %v/%v has no master</li>
-<li>cannot get EndPoint for master tablet record: %v record: %v</li>
 <li>failed to run explicit healthcheck on tablet: %v err: %v</li>
 <li>cannot connect to tablet %v: %v</li>
 <li>could not stream health records from tablet: %v err: %v</li>
@@ -3156,37 +3091,22 @@
 
 <h3 id="runhealthcheck">RunHealthCheck</h3>
 
-<p>Runs a health check on a remote tablet with the specified target type.</p>
+<p>Runs a health check on a remote tablet.</p>
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">RunHealthCheck &lt;tablet alias&gt; &lt;target tablet type&gt;</pre>
+<pre class="command-example">RunHealthCheck &lt;tablet alias&gt;</pre>
 
 <h4 id="arguments">Arguments</h4>
 
 <ul>
 <li><code>&lt;tablet alias&gt;</code> &ndash; Required. A Tablet Alias uniquely identifies a vttablet. The argument value is in the format <code>&lt;cell name&gt;-&lt;uid&gt;</code>.</li>
-<li><p><code>&lt;target tablet type&gt;</code> &ndash; Required. The vttablet&#39;s role. Valid values are:</p>
-
-<ul>
-<li><code>backup</code> &ndash; A slaved copy of data that is offline to queries other than for backup purposes</li>
-<li><code>batch</code> &ndash; A slaved copy of data for OLAP load patterns (typically for MapReduce jobs)</li>
-<li><code>experimental</code> &ndash; A slaved copy of data that is ready but not serving query traffic. The value indicates a special characteristic of the tablet that indicates the tablet should not be considered a potential master. Vitess also does not worry about lag for experimental tablets when reparenting.</li>
-<li><code>master</code> &ndash; A primary copy of data</li>
-<li><code>rdonly</code> &ndash; A slaved copy of data for OLAP load patterns</li>
-<li><code>replica</code> &ndash; A slaved copy of data ready to be promoted to master</li>
-<li><code>restore</code> &ndash; A tablet that is restoring from a snapshot. Typically, this happens at tablet startup, then it goes to its right state.</li>
-<li><code>schema_apply</code> &ndash; A slaved copy of data that had been serving query traffic but that is now applying a schema change. Following the change, the tablet will revert to its serving type.</li>
-<li><code>snapshot_source</code> &ndash; A slaved copy of data where mysqld is <b>not</b> running and where Vitess is serving data files to clone slaves. Use this command to enter this mode: <pre>vtctl Snapshot -server-mode ...</pre> Use this command to exit this mode: <pre>vtctl SnapshotSourceEnd ...</pre></li>
-<li><code>spare</code> &ndash; A slaved copy of data that is ready but not serving query traffic. The data could be a potential master tablet.</li>
-<li><code>worker</code> &ndash; A tablet that is in use by a vtworker process. The tablet is likely lagging in replication.</li>
-</ul></li>
 </ul>
 
 <h4 id="errors">Errors</h4>
 
 <ul>
-<li>The <code>&lt;tablet alias&gt;</code> and <code>&lt;target tablet type&gt;</code> arguments are required for the <code>&lt;RunHealthCheck&gt;</code> command. This error occurs if the command is not called with exactly 2 arguments.</li>
+<li>The <code>&lt;tablet alias&gt;</code> argument is required for the <code>&lt;RunHealthCheck&gt;</code> command. This error occurs if the command is not called with exactly one argument.</li>
 </ul>
 
 <h3 id="setreadonly">SetReadOnly</h3>
