@@ -275,8 +275,7 @@ In other words, keep each page&#39;s messages together, but spread pages around
 the shards randomly.</p>
 
 <p>We can load this VSchema into Vitess like this:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh SetKeyspaceShardingInfo test_keyspace keyspace_id uint64
-vitess/examples/local<span class="nv">$ </span>./lvtctl.sh ApplyVSchema -vschema <span class="s2">&quot;$(cat vschema.json)&quot;</span> test_keyspace
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh ApplyVSchema -vschema <span class="s2">&quot;$(cat vschema.json)&quot;</span> test_keyspace
 </code></pre></div>
 <h2 id="bring-up-tablets-for-new-shards">Bring up tablets for new shards</h2>
 

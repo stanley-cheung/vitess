@@ -271,8 +271,7 @@ In other words, keep each page&#39;s messages together, but spread pages around
 the shards randomly.</p>
 
 <p>We can load this VSchema into Vitess like this:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh SetKeyspaceShardingInfo test_keyspace keyspace_id uint64
-vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ApplyVSchema -vschema <span class="s2">&quot;$(cat vschema.json)&quot;</span> test_keyspace
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ApplyVSchema -vschema <span class="s2">&quot;$(cat vschema.json)&quot;</span> test_keyspace
 </code></pre></div>
 <h2 id="bring-up-tablets-for-new-shards">Bring up tablets for new shards</h2>
 
@@ -423,13 +422,12 @@ original one. To do that, we use the <code class="prettyprint">vttablet-down.sh<
 unsharded example:</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./vttablet-down.sh
 <span class="c">### example output:</span>
-<span class="c"># Removing tablet test-0000000100 from Vitess topology...</span>
 <span class="c"># Deleting pod for tablet test-0000000100...</span>
 <span class="c"># pods/vttablet-100</span>
 <span class="c"># ...</span>
 </code></pre></div>
 <p>Then we can delete the now-empty shard:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh DeleteShard test_keyspace/0
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh DeleteShard -recursive test_keyspace/0
 </code></pre></div>
 <p>You should then see in the vtctld <strong>Topology</strong> page, or in the output of
 <code class="prettyprint">kvtctl.sh ListAllTablets test</code> that the tablets for shard <em>0</em> are gone.</p>

@@ -221,167 +221,233 @@
       <div id="centerTextCol">
         <h1 id="topology-service">Topology Service</h1>
 
-<p>This document describes the Topology Service, a key part of the Vitess architecture. This service is exposed to all Vitess processes, and is used to store small pieces of configuration data about the Vitess cluster, and provide cluster-wide locks. It also supports watches, which we will use soon.</p>
+<p>This document describes the Topology Service, a key part of the Vitess
+architecture. This service is exposed to all Vitess processes, and is used to
+store small pieces of configuration data about the Vitess cluster, and provide
+cluster-wide locks. It also supports watches, which we will use soon.</p>
 
-<p>Concretely, the Topology Service features are implemented by a <a href="http://en.wikipedia.org/wiki/Distributed_lock_manager">Lock Server</a>, referred to as Topology Server in the rest of this document. We use a plug-in implementation and we support multiple Lock Servers (ZooKeeper, etcd, …) as backends for the service.</p>
+<p>Concretely, the Topology Service features are implemented by a
+<a href="http://en.wikipedia.org/wiki/Distributed_lock_manager">Lock Server</a>, referred
+to as Topology Server in the rest of this document. We use a plug-in
+implementation and we support multiple Lock Servers (ZooKeeper, etcd, …) as
+backends for the service.</p>
 
 <h2 id="requirements-and-usage">Requirements and Usage</h2>
 
-<p>The Topology Service is used to store information about the Keyspaces, the Shards, the Tablets, the Replication Graph, and the Serving Graph. We store small data structures (a few hundred bytes) per object.</p>
+<p>The Topology Service is used to store information about the Keyspaces, the
+Shards, the Tablets, the Replication Graph, and the Serving Graph. We store
+small data structures (a few hundred bytes) per object.</p>
 
-<p>The main contract for the Topology Server is to be very highly available and consistent. It is understood it will come at a higher latency cost and very low throughput.</p>
+<p>The main contract for the Topology Server is to be very highly available and
+consistent. It is understood it will come at a higher latency cost and very low
+throughput.</p>
 
-<p>We never use the Topology Server as an RPC mechanism, nor as a storage system for logs. We never depend on the Topology Server being responsive and fast to serve every query.</p>
+<p>We never use the Topology Server as an RPC mechanism, nor as a storage system
+for logs. We never depend on the Topology Server being responsive and fast to
+serve every query.</p>
 
-<p>The Topology Server must also support a Watch interface, to signal when certain conditions occur on a node. This is used for instance to know when servers come online or go offline.</p>
+<p>The Topology Server must also support a Watch interface, to signal when certain
+conditions occur on a node. This is used for instance to know when keyspaces
+topology changes (for resharding for instance).</p>
 
 <h3 id="global-vs-local">Global vs Local</h3>
 
-<p>We differentiate two instances of the Topology Server: the global instance, and the per-cell local instance:
-The global instance is used to store global data about the topology that doesn’t change very often, for instance information about Keyspaces and Shards. The data is independent of individual instances and cells, and needs to survive a cell going down entirely.
-There is one local instance per cell, that contains cell-specific information, and also rolled-up data from the global + local cell to make it easier for clients to find the data. The Vitess clients should not use the global topology instance, but instead the rolled-up data in the local topology server.</p>
+<p>We differentiate two instances of the Topology Server: the Global instance, and
+the per-cell Local instance:</p>
 
-<p>The global instance can go down for a while and not impact the local cells (an exception to that is if a reparent needs to be processed, it might not work). If a local instance goes down, it only affects the local tablets in that instance (and then the cell is usually in bad shape, and should not be used).</p>
+<ul>
+<li>The Global instance is used to store global data about the topology that
+doesn’t change very often, for instance information about Keyspaces and
+Shards. The data is independent of individual instances and cells, and needs
+to survive a cell going down entirely.</li>
+<li>There is one Local instance per cell, that contains cell-specific information,
+and also rolled-up data from the global + local cell to make it easier for
+clients to find the data. The Vitess local processes should not use the Global
+topology instance, but instead the rolled-up data in the Local topology
+server as much as possible.</li>
+</ul>
+
+<p>The Global instance can go down for a while and not impact the local cells (an
+exception to that is if a reparent needs to be processed, it might not work). If
+a Local instance goes down, it only affects the local tablets in that instance
+(and then the cell is usually in bad shape, and should not be used).</p>
+
+<p>Furthermore, the Vitess processes will not use the Global nor the Local Topology
+Server to serve individual queries. They only use the Topology Server to get the
+topology information at startup and in the background, but never to directly
+serve queries.</p>
 
 <h3 id="recovery">Recovery</h3>
 
-<p>If a local Topology Server dies and is not recoverable, it can be wiped out. All the tablets in that cell then need to be restarted so they re-initialize their topology records (but they won’t lose any MySQL data).</p>
+<p>If a local Topology Server dies and is not recoverable, it can be wiped out. All
+the tablets in that cell then need to be restarted so they re-initialize their
+topology records (but they won’t lose any MySQL data).</p>
 
-<p>If the global Topology Server dies and is not recoverable, this is more of a problem. All the Keyspace / Shard objects have to be re-created. Then the cells should recover.</p>
+<p>If the global Topology Server dies and is not recoverable, this is more of a
+problem. All the Keyspace / Shard objects have to be re-created. Then the cells
+should recover.</p>
 
 <h2 id="global-data">Global Data</h2>
 
-<p>This section describes the data structures stored in the global instance of the topology server.</p>
+<p>This section describes the data structures stored in the global instance of the
+topology server.</p>
 
 <h3 id="keyspace">Keyspace</h3>
 
-<p>The Keyspace object contains various information, mostly about sharding: how is this Keyspace sharded, what is the name of the sharding key column, is this Keyspace serving data yet, how to split incoming queries, …</p>
+<p>The Keyspace object contains various information, mostly about sharding: how is
+this Keyspace sharded, what is the name of the sharding key column, is this
+Keyspace serving data yet, how to split incoming queries, …</p>
 
-<p>An entire Keyspace can be locked. We use this during resharding for instance, when we change which Shard is serving what inside a Keyspace. That way we guarantee only one operation changes the keyspace data concurrently.</p>
+<p>An entire Keyspace can be locked. We use this during resharding for instance,
+when we change which Shard is serving what inside a Keyspace. That way we
+guarantee only one operation changes the keyspace data concurrently.</p>
 
 <h3 id="shard">Shard</h3>
 
-<p>A Shard contains a subset of the data for a Keyspace. The Shard record in the global topology contains:</p>
+<p>A Shard contains a subset of the data for a Keyspace. The Shard record in the
+global topology contains:</p>
 
 <ul>
 <li>the MySQL Master tablet alias for this shard</li>
 <li>the sharding key range covered by this Shard inside the Keyspace</li>
-<li>the tablet types this Shard is serving (master, replica, batch, …), per cell if necessary.</li>
-<li>if during filtered replication, the source shards this shard is replicating from</li>
+<li>the tablet types this Shard is serving (master, replica, batch, …), per cell
+if necessary.</li>
+<li>if during filtered replication, the source shards this shard is replicating
+from</li>
 <li>the list of cells that have tablets in this shard</li>
-<li>shard-global tablet controls, like blacklisted tables no tablet should serve in this shard</li>
+<li>shard-global tablet controls, like blacklisted tables no tablet should serve
+in this shard</li>
 </ul>
 
-<p>A Shard can be locked. We use this during operations that affect either the Shard record, or multiple tablets within a Shard (like reparenting), so multiple jobs don’t concurrently alter the data.</p>
+<p>A Shard can be locked. We use this during operations that affect either the
+Shard record, or multiple tablets within a Shard (like reparenting), so multiple
+jobs don’t concurrently alter the data.</p>
 
 <h3 id="vschema-data">VSchema Data</h3>
 
-<p>(experimental) The VSchema data contains sharding and routing information for the <a href="http://vitess.io/doc/VTGateV3Features/">VTGate V3</a> API.</p>
+<p>The VSchema data contains sharding and routing information for
+the <a href="http://vitess.io/doc/VTGateV3Features/">VTGate V3</a> API.</p>
 
 <h2 id="local-data">Local Data</h2>
 
-<p>This section describes the data structures stored in the local instance (per cell) of the topology server.</p>
+<p>This section describes the data structures stored in the local instance (per
+cell) of the topology server.</p>
 
 <h3 id="tablets">Tablets</h3>
 
-<p>The Tablet record has a lot of information about a single vttablet process running inside a tablet (along with the MySQL process):</p>
+<p>The Tablet record has a lot of information about a single vttablet process
+running inside a tablet (along with the MySQL process):</p>
 
 <ul>
 <li>the Tablet Alias (cell+unique id) that uniquely identifies the Tablet</li>
 <li>the Hostname, IP address and port map of the Tablet</li>
 <li>the current Tablet type (master, replica, batch, spare, …)</li>
 <li>which Keyspace / Shard the tablet is part of</li>
-<li>the health map for the Tablet (if in degraded mode)</li>
 <li>the sharding Key Range served by this Tablet</li>
 <li>user-specified tag map (to store per installation data for instance)</li>
 </ul>
 
-<p>A Tablet record is created before a tablet can be running (either by <code class="prettyprint">vtctl InitTablet</code> or by passing the <code class="prettyprint">init_*</code> parameters to vttablet). The only way a Tablet record will be updated is one of:</p>
+<p>A Tablet record is created before a tablet can be running (either by <code class="prettyprint">vtctl
+InitTablet</code> or by passing the <code class="prettyprint">init_*</code> parameters to vttablet). The only way a
+Tablet record will be updated is one of:</p>
 
 <ul>
-<li>The vttablet process itself owns the record while it is running, and can change it.</li>
+<li>The vttablet process itself owns the record while it is running, and can
+change it.</li>
 <li>At init time, before the tablet starts</li>
 <li>After shutdown, when the tablet gets deleted.</li>
-<li>If a tablet becomes unresponsive, it may be forced to spare to remove it from the serving graph (such as when reparenting away from a dead master, by the <code class="prettyprint">vtctl ReparentShard</code> action).</li>
+<li>If a tablet becomes unresponsive, it may be forced to spare to make it
+unhealthy when it restarts.</li>
 </ul>
 
 <h3 id="replication-graph">Replication Graph</h3>
 
-<p>The Replication Graph allows us to find Tablets in a given Cell / Keyspace / Shard. It used to contain information about which Tablet is replicating from which other Tablet, but that was too complicated to maintain. Now it is just a list of Tablets.</p>
+<p>The Replication Graph allows us to find Tablets in a given Cell / Keyspace /
+Shard. It used to contain information about which Tablet is replicating from
+which other Tablet, but that was too complicated to maintain. Now it is just a
+list of Tablets.</p>
 
 <h3 id="serving-graph">Serving Graph</h3>
 
-<p>The Serving Graph is what the clients use to find which EndPoints to send queries to. It is a roll-up of global data and local data. Clients only open a small number of these objects and get all they need quickly.</p>
+<p>The Serving Graph is what the clients use to find the per-cell topology of a
+Keyspace. It is a roll-up of global data (Keyspace + Shard). vtgates only open a
+small number of these objects and get all they need quickly.</p>
 
 <h4 id="srvkeyspace">SrvKeyspace</h4>
 
-<p>It is the local representation of a Keyspace. It contains information on what shard to use for getting to the data (but not information about each individual shard):</p>
+<p>It is the local representation of a Keyspace. It contains information on what
+shard to use for getting to the data (but not information about each individual
+shard):</p>
 
 <ul>
-<li>the partitions map is keyed by the tablet type (master, replica, batch, …) and the values are list of shards to use for serving.</li>
+<li>the partitions map is keyed by the tablet type (master, replica, batch, …) and
+the values are list of shards to use for serving.</li>
 <li>it also contains the global Keyspace fields, copied for fast access.</li>
 </ul>
 
-<p>It can be rebuilt by running <code class="prettyprint">vtctl RebuildKeyspaceGraph</code>. It is not automatically rebuilt when adding new tablets in a cell, as this would cause too much overhead and is only needed once per cell/keyspace. It may also be changed during horizontal and vertical splits.</p>
-
-<h4 id="srvshard">SrvShard</h4>
-
-<p>It is the local representation of a Shard. It contains information on details internal to this Shard only, but not to any tablet running in this shard:</p>
-
-<ul>
-<li>the name and sharding Key Range for this Shard.</li>
-<li>the cell that has the master for this Shard.</li>
-</ul>
-
-<p>It is possible to lock a SrvShard object, to massively update all EndPoints in it.</p>
-
-<p>It can be rebuilt (along with all the EndPoints in this Shard) by running <code class="prettyprint">vtctl RebuildShardGraph</code>.</p>
-
-<h4 id="endpoints">EndPoints</h4>
-
-<p>For each possible serving type (master, replica, batch), in each Cell / Keyspace / Shard, we maintain a rolled-up EndPoint list. Each entry in the list has information about one Tablet:</p>
-
-<ul>
-<li>the Tablet Uid</li>
-<li>the Host on which the Tablet resides</li>
-<li>the port map for that Tablet</li>
-<li>the health map for that Tablet</li>
-</ul>
+<p>It can be rebuilt by running <code class="prettyprint">vtctl RebuildKeyspaceGraph</code>. It is not
+automatically rebuilt when adding new tablets in a cell, as this would cause too
+much overhead and is only needed once per cell/keyspace. It may also be changed
+during horizontal and vertical splits.</p>
 
 <h2 id="workflows-involving-the-topology-server">Workflows Involving the Topology Server</h2>
 
 <p>The Topology Server is involved in many Vitess workflows.</p>
 
-<p>When a Tablet is initialized, we create the Tablet record, and add the Tablet to the Replication Graph. If it is the master for a Shard, we update the global Shard record as well (we may also update the SrvShard objects in all cells if this master is in a different cell). When the Tablet is changed to be serving (its type is changed to master, replica or batch), it is also added to the Serving Graph.</p>
+<p>When a Tablet is initialized, we create the Tablet record, and add the Tablet to
+the Replication Graph. If it is the master for a Shard, we update the global
+Shard record as well.</p>
 
 <p>Administration tools need to find the tablets for a given Keyspace / Shard:
-first we get the list of Cells that have Tablets for the Shard (global topology Shard record has these)
-then we use the Replication Graph for that Cell / Keyspace / Shard to find all the tablets
-then we can read each tablet record.</p>
+first we get the list of Cells that have Tablets for the Shard (global topology
+Shard record has these) then we use the Replication Graph for that Cell /
+Keyspace / Shard to find all the tablets then we can read each tablet record.</p>
 
-<p>When a Shard is reparented, we need to update the global Shard record with the new master alias. If the cell the master is in has changed, we also need to change the SrvShard records in all cells. And obviously the master EndPoints list will change.</p>
+<p>When a Shard is reparented, we need to update the global Shard record with the
+new master alias.</p>
 
-<p>Finding a tablet to serve the data is fairly easy: the client needs to read the SrvKeyspace object to find which shard to use, then it can directly read the EndPoints. To access the master remotely, the client may read the SrvShard to find the master cell, and get the EndPoints there.</p>
+<p>Finding a tablet to serve the data is done in two stages: vtgate maintains a
+health check connection to all possible tablets, and they report which keyspace
+/ shard / tablet type they serve. vtgate also reads the SrvKeyspace object, to
+find out the shard map. With these two pieces of information, vtgate can route
+the query to the right vttablet.</p>
 
-<p>During resharding events, we also change the topology a lot. An horizontal split will change the global Shard records, and the local SrvKeyspace records. A vertical split will change the global Keyspace records, and the local SrvKeyspace records.</p>
+<p>During resharding events, we also change the topology a lot. An horizontal split
+will change the global Shard records, and the local SrvKeyspace records. A
+vertical split will change the global Keyspace records, and the local
+SrvKeyspace records.</p>
 
 <h2 id="implementations">Implementations</h2>
 
-<p>The Topology Server interface is defined in our code in go/vt/topo/server.go and we also have a set of unit tests for it in go/vt/topo/test.</p>
+<p>The Topology Server interface is defined in our code in go/vt/topo/server.go and
+we also have a set of unit tests for it in go/vt/topo/test.</p>
 
-<p>This part describes the two implementations we have, and their specific behavior.</p>
+<p>This part describes the two implementations we have, and their specific
+behavior.</p>
 
 <h3 id="zookeeper">ZooKeeper</h3>
 
-<p>Our ZooKeeper implementation is based on a configuration file that describes where the global and each local cell ZK instances are. When adding a cell, all processes that may access that cell should be restarted with the new configuration file.</p>
+<p>Our ZooKeeper implementation is based on a configuration file that describes
+where the global and each local cell ZK instances are. When adding a cell, all
+processes that may access that cell should be restarted with the new
+configuration file.</p>
 
-<p>The global cell typically has around 5 servers, distributed one in each cell. The local cells typically have 3 or 5 servers, in different server racks / sub-networks for higher resiliency. For our integration tests, we use a single ZK server that serves both global and local cells.</p>
+<p>The global cell typically has around 5 servers, distributed one in each
+cell. The local cells typically have 3 or 5 servers, in different server racks /
+sub-networks for higher resiliency. For our integration tests, we use a single
+ZK server that serves both global and local cells.</p>
 
-<p>We sometimes store both data and sub-directories in a path (for a keyspace for instance). We use JSON to encode the data.</p>
+<p>We sometimes store both data and sub-directories in a path (for a keyspace for
+instance). We use JSON to encode the data.</p>
 
-<p>For locking, we use an auto-incrementing file name in the <code class="prettyprint">/action</code> subdirectory of the object directory. We also move them to <code class="prettyprint">/actionlogs</code> when the lock is released. And we have a purge process to clear the old locks (which should be run on a crontab, typically).</p>
+<p>For locking, we use an auto-incrementing file name in the <code class="prettyprint">/action</code> subdirectory
+of the object directory. We also move them to <code class="prettyprint">/actionlogs</code> when the lock is
+released. And we have a purge process to clear the old locks (which should be
+run on a crontab, typically).</p>
 
-<p>Note the paths used to store global and per-cell data do not overlap, so a single ZK can be used for both global and local ZKs. This is however not recommended, for reliability reasons.</p>
+<p>Note the paths used to store global and per-cell data do not overlap, so a
+single ZK can be used for both global and local ZKs. This is however not
+recommended, for reliability reasons.</p>
 
 <ul>
 <li>Keyspace: <code class="prettyprint">/zk/global/vt/keyspaces/&lt;keyspace&gt;</code></li>
@@ -389,27 +455,28 @@ then we can read each tablet record.</p>
 <li>Tablet: <code class="prettyprint">/zk/&lt;cell&gt;/vt/tablets/&lt;uid&gt;</code></li>
 <li>Replication Graph: <code class="prettyprint">/zk/&lt;cell&gt;/vt/replication/&lt;keyspace&gt;/&lt;shard&gt;</code></li>
 <li>SrvKeyspace: <code class="prettyprint">/zk/&lt;cell&gt;/vt/ns/&lt;keyspace&gt;</code></li>
-<li>SrvShard: <code class="prettyprint">/zk/&lt;cell&gt;/vt/ns/&lt;keyspace&gt;/&lt;shard&gt;</code></li>
-<li>EndPoints: <code class="prettyprint">/zk/&lt;cell&gt;/vt/ns/&lt;keyspace&gt;/&lt;shard&gt;/&lt;tablet type&gt;</code></li>
 </ul>
 
-<p>We provide the &#39;zk&#39; utility for easy access to the topology data in ZooKeeper. For instance:
-<code class="prettyprint">
-\# NOTE: You need to source zookeeper client config file, like so:
+<p>We provide the &#39;zk&#39; utility for easy access to the topology data in
+ZooKeeper. For instance:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">\# NOTE: You need to source zookeeper client config file, like so:
 \#  export ZK_CLIENT_CONFIG=/path/to/zk/client.conf
 $ zk ls /zk/global/vt/keyspaces/user
 action
 actionlog
 shards
-</code></p>
-
+</code></pre></div>
 <h3 id="etcd">Etcd</h3>
 
-<p>Our etcd implementation is based on a command-line parameter that gives the location(s) of the global etcd server. Then we query the path <code class="prettyprint">/vt/cells</code> and each file in there is named after a cell, and contains the list of etcd servers for that cell.</p>
+<p>Our etcd implementation is based on a command-line parameter that gives the
+location(s) of the global etcd server. Then we query the path <code class="prettyprint">/vt/cells</code> and
+each file in there is named after a cell, and contains the list of etcd servers
+for that cell.</p>
 
 <p>We use the <code class="prettyprint">_Data</code> filename to store the data, JSON encoded.</p>
 
-<p>For locking, we store a <code class="prettyprint">_Lock</code> file with various contents in the directory that contains the object to lock.</p>
+<p>For locking, we store a <code class="prettyprint">_Lock</code> file with various contents in the directory that
+contains the object to lock.</p>
 
 <p>We use the following paths:</p>
 
@@ -419,8 +486,6 @@ shards
 <li>Tablet: <code class="prettyprint">/vt/tablets/&lt;cell&gt;-&lt;uid&gt;/_Data</code></li>
 <li>Replication Graph: <code class="prettyprint">/vt/replication/&lt;keyspace&gt;/&lt;shard&gt;/_Data</code></li>
 <li>SrvKeyspace: <code class="prettyprint">/vt/ns/&lt;keyspace&gt;/_Data</code></li>
-<li>SrvShard: <code class="prettyprint">/vt/ns/&lt;keyspace&gt;/&lt;shard&gt;/_Data</code></li>
-<li>EndPoints: <code class="prettyprint">/vt/ns/&lt;keyspace&gt;/&lt;shard&gt;/&lt;tablet type&gt;</code></li>
 </ul>
 
       </div>

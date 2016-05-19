@@ -629,11 +629,11 @@
 
 <h3 id="rebuildkeyspacegraph">RebuildKeyspaceGraph</h3>
 
-<p>Rebuilds the serving data for the keyspace and, optionally, all shards in the specified keyspace. This command may trigger an update to all connected clients.</p>
+<p>Rebuilds the serving data for the keyspace. This command may trigger an update to all connected clients.</p>
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">RebuildKeyspaceGraph [-cells=a,b] [-rebuild_srv_shards] &lt;keyspace&gt; ...</pre>
+<pre class="command-example">RebuildKeyspaceGraph [-cells=a,b] &lt;keyspace&gt; ...</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -648,11 +648,6 @@
 <td style="text-align: left">cells</td>
 <td style="text-align: left">string</td>
 <td style="text-align: left">Specifies a comma-separated list of cells to update</td>
-</tr>
-<tr>
-<td style="text-align: left">rebuild_srv_shards</td>
-<td style="text-align: left">Boolean</td>
-<td style="text-align: left">Indicates whether all SrvShard objects should also be rebuilt. The default value is <code>false</code>.</td>
 </tr>
 </tbody></table>
 
@@ -1970,7 +1965,6 @@
 <li><a href="#listbackups">ListBackups</a></li>
 <li><a href="#listshardtablets">ListShardTablets</a></li>
 <li><a href="#plannedreparentshard">PlannedReparentShard</a></li>
-<li><a href="#rebuildshardgraph">RebuildShardGraph</a></li>
 <li><a href="#removebackup">RemoveBackup</a></li>
 <li><a href="#removeshardcell">RemoveShardCell</a></li>
 <li><a href="#setshardservedtypes">SetShardServedTypes</a></li>
@@ -2095,7 +2089,6 @@
 
 <ul>
 <li>action <code>&lt;EmergencyReparentShard&gt;</code> requires <code>&lt;keyspace/shard&gt;</code> <code>&lt;tablet alias&gt;</code> This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>active reparent actions disable in this cluster</li>
 </ul>
 
 <h3 id="getshard">GetShard</h3>
@@ -2158,7 +2151,6 @@
 
 <ul>
 <li>action <code>&lt;InitShardMaster&gt;</code> requires <code>&lt;keyspace/shard&gt;</code> <code>&lt;tablet alias&gt;</code> This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>active reparent actions disable in this cluster</li>
 </ul>
 
 <h3 id="listbackups">ListBackups</h3>
@@ -2229,43 +2221,6 @@
 
 <ul>
 <li>action <code>&lt;PlannedReparentShard&gt;</code> requires <code>&lt;keyspace/shard&gt;</code> <code>&lt;tablet alias&gt;</code> This error occurs if the command is not called with exactly 2 arguments.</li>
-<li>active reparent actions disable in this cluster</li>
-</ul>
-
-<h3 id="rebuildshardgraph">RebuildShardGraph</h3>
-
-<p>Rebuilds the replication graph and shard serving data in ZooKeeper or etcd. This may trigger an update to all connected clients.</p>
-
-<h4 id="example">Example</h4>
-
-<pre class="command-example">RebuildShardGraph [-cells=a,b] &lt;keyspace/shard&gt; ...</pre>
-
-<h4 id="flags">Flags</h4>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Definition</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">cells</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">Specifies a comma-separated list of cells to update</td>
-</tr>
-</tbody></table>
-
-<h4 id="arguments">Arguments</h4>
-
-<ul>
-<li><code>&lt;keyspace/shard&gt;</code> &ndash; Required. The name of a sharded database that contains one or more tables as well as the shard associated with the command. The keyspace must be identified by a string that does not contain whitepace, while the shard is typically identified by a string in the format <code>&lt;range start&gt;-&lt;range end&gt;</code>. To specify multiple values for this argument, separate individual values with a space.</li>
-</ul>
-
-<h4 id="errors">Errors</h4>
-
-<ul>
-<li>The <code>&lt;keyspace/shard&gt;</code> argument must be used to identify at least one keyspace and shard when calling the <code>&lt;RebuildShardGraph&gt;</code> command. This error occurs if the command is not called with at least one argument.</li>
 </ul>
 
 <h3 id="removebackup">RemoveBackup</h3>
@@ -2763,7 +2718,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">DeleteTablet [-allow_master] [-skip_rebuild] &lt;tablet alias&gt; ...</pre>
+<pre class="command-example">DeleteTablet [-allow_master] &lt;tablet alias&gt; ...</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -2778,11 +2733,6 @@
 <td style="text-align: left">allow_master</td>
 <td style="text-align: left">Boolean</td>
 <td style="text-align: left">Allows for the master tablet of a shard to be deleted. Use with caution.</td>
-</tr>
-<tr>
-<td style="text-align: left">skip_rebuild</td>
-<td style="text-align: left">Boolean</td>
-<td style="text-align: left">Skips rebuilding the shard serving graph after deleting the tablet</td>
 </tr>
 </tbody></table>
 
@@ -2810,7 +2760,6 @@
 
 <ul>
 <li>action <code>&lt;DemoteMaster&gt;</code> requires <code>&lt;tablet alias&gt;</code> This error occurs if the command is not called with exactly one argument.</li>
-<li>active reparent actions disable in this cluster</li>
 </ul>
 
 <h3 id="executefetchasdba">ExecuteFetchAsDba</h3>
@@ -3086,7 +3035,6 @@
 
 <ul>
 <li>action <code>&lt;ReparentTablet&gt;</code> requires <code>&lt;tablet alias&gt;</code> This error occurs if the command is not called with exactly one argument.</li>
-<li>active reparent actions disable in this cluster</li>
 </ul>
 
 <h3 id="runhealthcheck">RunHealthCheck</h3>
