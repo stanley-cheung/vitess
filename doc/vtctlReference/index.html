@@ -111,6 +111,7 @@
                 <li style="padding-bottom: 0"><a href="/user-guide/sharding-kubernetes.html">Sharding in Kubernetes (Codelab)</a></li>
               </ul>
             </li>
+            <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
           </ul>
         </li>
@@ -186,6 +187,7 @@
                 <li style="padding-bottom: 0"><a href="/user-guide/sharding-kubernetes.html">Sharding in Kubernetes (Codelab)</a></li>
               </ul>
             </li>
+            <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
           </ul>
         </li>
@@ -369,7 +371,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">CreateKeyspace [-sharding_column_name=name] [-sharding_column_type=type] [-served_from=tablettype1:ks1,tablettype2,ks2,...] [-split_shard_count=N] [-force] &lt;keyspace name&gt;</pre>
+<pre class="command-example">CreateKeyspace [-sharding_column_name=name] [-sharding_column_type=type] [-served_from=tablettype1:ks1,tablettype2,ks2,...] [-force] &lt;keyspace name&gt;</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -399,11 +401,6 @@
 <td style="text-align: left">sharding_column_type</td>
 <td style="text-align: left">string</td>
 <td style="text-align: left">Specifies the type of the column to use for sharding operations</td>
-</tr>
-<tr>
-<td style="text-align: left">split_shard_count</td>
-<td style="text-align: left">Int</td>
-<td style="text-align: left">Specifies the number of shards to use for data splits</td>
 </tr>
 </tbody></table>
 
@@ -772,7 +769,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">SetKeyspaceShardingInfo [-force] [-split_shard_count=N] &lt;keyspace name&gt; [&lt;column name&gt;] [&lt;column type&gt;]</pre>
+<pre class="command-example">SetKeyspaceShardingInfo [-force] &lt;keyspace name&gt; [&lt;column name&gt;] [&lt;column type&gt;]</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -787,11 +784,6 @@
 <td style="text-align: left">force</td>
 <td style="text-align: left">Boolean</td>
 <td style="text-align: left">Updates fields even if they are already set. Use caution before calling this command.</td>
-</tr>
-<tr>
-<td style="text-align: left">split_shard_count</td>
-<td style="text-align: left">Int</td>
-<td style="text-align: left">Specifies the number of shards to use for data splits</td>
 </tr>
 </tbody></table>
 

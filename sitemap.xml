@@ -9,6 +9,10 @@
     <lastmod>2015-01-01T00:00:00-08:00</lastmod>
   </url>
   <url>
+    <loc>http://vitess.io/doc/VitessReplication/</loc>
+    <lastmod>2015-01-01T00:00:00-08:00</lastmod>
+  </url>
+  <url>
     <loc>http://vitess.io/doc/VitessOverview/</loc>
     <lastmod>2015-01-01T00:00:00-08:00</lastmod>
   </url>
@@ -162,6 +166,9 @@
   </url>
   <url>
     <loc>http://vitess.io/reference/vitess-api.html</loc>
+  </url>
+  <url>
+    <loc>http://vitess.io/user-guide/vitess-replication.html</loc>
   </url>
   <url>
     <loc>http://vitess.io/reference/vtctl.html</loc>

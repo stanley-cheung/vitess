@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vitess / LifeOfAQuery</title>
+    <title>Vitess / Vitess and Replication</title>
 
         <!-- Webfont -->
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
@@ -35,7 +35,7 @@
 
 
     <!-- metadata -->
-    <meta name="og:title" content="Vitess / LifeOfAQuery"/>
+    <meta name="og:title" content="Vitess / Vitess and Replication"/>
     <meta name="og:image" content="/images/vitess-logo-large-cropped-2.png"/>
     <meta name="og:description" content="Servers and tools that scale MySQL databases for the web in cloud architectures or on dedicated hardware."/>
 
@@ -147,7 +147,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-9">
-        <h1>LifeOfAQuery</h1>
+        <h1>Vitess and Replication</h1>
       </div>
     </div>
   </div>
@@ -221,63 +221,171 @@
     </div>
     <div class="col-md-7" id="centerCol">
       <div id="centerTextCol">
-        <h1 id="life-of-a-query">Life of A Query</h1>
+        <h1 id="vitess-mysql-replication-and-schema-changes">Vitess, MySQL Replication, and Schema Changes</h1>
+
+<h2 id="statement-vs-row-based-replication">Statement vs Row Based Replication</h2>
+
+<p>MySQL supports two primary modes of replication in its binary logs: statement or
+row based.</p>
+
+<p><strong>Statement Based Replication</strong>:</p>
 
 <ul>
-<li><a href="#from-client-to-vtgate">From Client to VtGate</a></li>
-<li><a href="#from-vtgate-to-vttablet">From VtGate to VtTablet</a></li>
-<li><a href="#from-vttablet-to-mysql">From VtTablet to MySQL</a></li>
-<li><a href="#putting-it-all-together">Putting it all together</a></li>
-<li><a href="#toposerver">TopoServer</a></li>
-<li><a href="#streaming-query">Streaming Query</a></li>
-<li><a href="#scatter-query">Scatter Query</a></li>
+<li>The statements executed on the master are copied almost as-is in the master
+logs.</li>
+<li>The slaves replay these statements as is.</li>
+<li>If the statements are expensive (especially an update with a complicated WHERE
+clause), they will be expensive on the slaves too.</li>
+<li>For current timestamp and auto-increment values, the master also puts
+additional SET statements in the logs to make the statement have the same
+effect, so the slaves end up with the same values.</li>
 </ul>
 
-<p>A query means a request for information from database and it involves four components in the case of Vitess, including the client application, VtGate, VtTablet and MySQL instance. This doc explains the interaction which happens between and within components.</p>
+<p><strong>Row Based Replication</strong>:</p>
 
-<p><img src="https://raw.githubusercontent.com/youtube/vitess/master/doc/life_of_a_query.png" alt=""></p>
+<ul>
+<li>The statements executed on the master result in updated rows. The new full
+values for these rows are copied to the master logs.</li>
+<li>The slaves change their records for the rows they receive. The update is by
+primary key, and contains the new values for each column, so it’s very fast.</li>
+<li>Each updated row contains the entire row, not just the columns that were
+updated. (this is inefficient if only one column out of a large number has
+changed, but it’s more efficient on the slave to just swap out the row with
+the new one).</li>
+<li>The replication stream is harder to read, as it contains almost binary data,
+that don’t easily map to the original statements.</li>
+<li>There is a configurable limit on how many rows can be affected by one
+statement, so the master logs are not flooded.</li>
+<li>The format of the logs depends on the master schema: each row has a list of
+values, one value for each column. So if the master schema is different from
+the slave schema, updates will misbehave (exception being if slave has extra
+columns at the end).</li>
+<li>It is possible to revert to statement based replication for some commands to
+avoid these drawbacks (for instance for DELETE statements that affect a large
+number of rows).</li>
+<li>Schema changes revert to statement based replication.</li>
+<li>If comments are added to a statement, they are stripped from the
+replication stream (as only rows are transmitted). There is a debug flag to
+add the original statement to each row update, but it is costly in terms of
+binlog size, and very verbose.</li>
+</ul>
 
-<p>At a very high level, as the graph shows, first the client sends a query to VtGate. VtGate then resolves the query and routes it to the right VtTablets. For each VtTablet that receives the query, it does necessary validations and passes the query to the underlying MySQL instance. After gathering results from MySQL, VtTablet sends the response back to VtGate. Once VtGate receives responses from all VtTablets, it sends the combined result to the client. In the presence of VtTablet errors, VtGate will retry the query if errors are recoverable and it only fails the query if either errors are unrecoverable or the maximum number of retries has been reached.</p>
+<p>For the longest time, MySQL replication has been single-threaded: only one
+statement is applied by the slaves at a time. Since the master applies more
+statements in parallel, replication can fall behind on the slaves fairly easily,
+under higher load. Even though the situation has improved (group commit), the
+slave replication speed is still a limiting factor for a lot of
+applications. Since row based replication achieves higher update rates on the
+slaves, it has been the only viable option for most performance sensitive
+applications.</p>
 
-<h2 id="from-client-to-vtgate">From Client to VtGate</h2>
+<p>Schema changes however are not easy to achieve with row based
+replication. Adding columns can be done offline, but removing or changing
+columns cannot easily be done (there are multiple ways to achieve this, but they
+all have limitations or performance implications, and are not that easy to
+setup).</p>
 
-<p>A client application first sends an rpc with an embedded sql query to VtGate. VtGate&#39;s rpc server unmarshals this rpc request, calls the appropriate VtGate method and return its result back to client.</p>
+<p>Vitess helps by using statement based replication (therefore allowing complex
+schema changes), while at the same time simplifying the replication stream (so
+slaves can be fast), by rewriting Update statements.</p>
 
-<p><img src="https://raw.githubusercontent.com/youtube/vitess/master/doc/life_of_a_query_client_to_vtgate.png" alt=""></p>
+<p>Then, with statement based replication, it becomes easier to perform offline
+advanced schema changes, or large data updates. Vitess’s solution is called
+pivot.</p>
 
-<p>VtGate keeps an in-memory table that stores all available rpc methods for each service, e.g. VtGate uses &quot;VTGate&quot; as its service name and most of its methods defined in <a href="../go/vt/vtgate/vtgate.go">go/vt/vtgate/vtgate.go</a> are used to serve rpc request.</p>
+<p>We plan to also support row based replication in the future, and adapt our tools
+to provide the same features when possible.</p>
 
-<h2 id="from-vtgate-to-vttablet">From VtGate to VtTablet</h2>
+<h2 id="rewriting-update-statements">Rewriting Update Statements</h2>
 
-<p><img src="https://raw.githubusercontent.com/youtube/vitess/master/doc/life_of_a_query_vtgate_to_vttablet.png" alt=""></p>
+<p>Vitess rewrites ‘UPDATE’ SQL statements to always know what rows will be
+affected. For instance, this statement:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">UPDATE &lt;table&gt; SET &lt;set values&gt; WHERE &lt;clause&gt;
+</code></pre></div>
+<p>Will be rewritten into:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">SELECT &lt;primary key columns&gt; FROM &lt;table&gt; WHERE &lt;clause&gt; FOR UPDATE
+UPDATE &lt;table&gt; SET &lt;set values&gt; WHERE &lt;primary key columns&gt; IN &lt;result from previous SELECT&gt; /* primary key values: … */
+</code></pre></div>
+<p>With this rewrite in effect, we know exactly which rows are affected, by primary
+key, and we also document them as a SQL comment.</p>
 
-<p>After receiving an rpc call from the client and one of its Execute* method being invoked, VtGate needs to figure out which shards should receive the query and send it to each of them. In addition, VtGate talks to the topo server to get necessary information to create a VtTablet connection for each shard. At this point, VtGate is able to send the query to the right VtTablets in parallel. VtGate also does retry if timeout happens or some VtTablets return recoverable errors.</p>
+<p>The replication stream then doesn’t contain the expensive WHERE clauses, but
+only the UPDATE statements by primary key. In a sense, it is combining the best
+of row based and statement based replication: the slaves only do primary key
+based updates, but the replication stream is very friendly for schema changes.</p>
 
-<p>Internally, VtGate has a ScatterConn instance and uses it to execute queries across multiple ShardConn connections. A ScatterConn performs the query on selected shards in parallel. It first obtains a ShardConn connection for every shard and sends the query using the ShardConn&#39;s execute method. If the requested session is in a transaction, it will open a new transaction on the connection, and update the Session with the transaction id. If the session already contains a transaction id for the shard, it reuses it. If there are any unrecoverable errors during a transaction, it rolls back the transaction for all shards.</p>
+<p>Also, Vitess adds comments to the rewritten statements that identify the primary
+key affected by that statement. This allows us to produce an Update Stream (see
+section below).</p>
 
-<p>A ShardConn object represents a load balanced connection to a group of VtTablets that belong to the same shard. ShardConn can be concurrently used across goroutines.</p>
+<h2 id="vitess-pivot">Vitess Pivot</h2>
 
-<h2 id="from-vttablet-to-mysql">From VtTablet to MySQL</h2>
+<p>In a Vitess shard, we have a master and multiple slaves (replicas, batch,
+…). Slaves are brought up by restoring a recent backup, and catching up on
+replication. It is possible to efficiently and safely re-parent the master
+to a slave on demand. We use statement based replication. The combination
+of all these features makes our pivot workflow work very well.</p>
 
-<p><img src="https://raw.githubusercontent.com/youtube/vitess/master/doc/life_of_a_query_vttablet_to_mysql.png" alt=""></p>
+<p>The pivot operation works as follows:</p>
 
-<p>Once VtTablet received an rpc call from VtGate, it does a few checks before passing the query to MySQL. First, it validates the current VtTablet state including the session id, then generates a query plan and applies predefined query rules and does ACL checks. It also checks whether the query hits the row cache and returns the result immediately if so. In addition, VtTablet consolidates duplicate queries from executing simultaneously and shares results between them. At this point, VtTablet has no way but pass the query down to MySQL layer and wait for the result.</p>
+<ul>
+<li>Pick a slave, take it out of service. It is not used by clients any more.</li>
+<li>Stop replication on the slave.</li>
+<li>Apply whatever schema or large data change is needed, on the slave.</li>
+<li>Take a backup of that slave.</li>
+<li>On all the other slaves, one at a time, take them out of service, restore the
+backup, catch up on replication, put them back into service.</li>
+<li>When all slaves are done, reparent to a slave that has applied the change.</li>
+<li>The old master can then be restored from a backup again, and put back into
+service.</li>
+</ul>
 
-<h2 id="putting-it-all-together">Putting it all together</h2>
+<p>With this process, the only guarantee we need is for the change (schema or data)
+to be backward compatible: the clients won’t know if they talk to a server
+that has applied the change yet or not. This is usually fairly easy to deal
+with:</p>
 
-<p><img src="https://raw.githubusercontent.com/youtube/vitess/master/doc/life_of_a_query_all.png" alt=""></p>
+<ul>
+<li>When adding a column, clients cannot use it until the pivot is done.</li>
+<li>When removing a column, all clients must stop referring to it before the
+pivot begins.</li>
+<li>A column rename is still tricky: the best way to do it is to add a new column
+with the new name in one pivot, then change the client to populate both (and
+possibly backfill the values), then change the client again to use the new
+column only, then use another pivot to remove the original column.</li>
+<li>A whole bunch of operations are really easy to perform though: index changes,
+optimize table, …</li>
+</ul>
 
-<h2 id="toposerver">TopoServer</h2>
+<p>Note the real change is only applied to one instance. We then rely on the backup
+/ restore process to propagate the change. This is a very good improvement from
+letting the changes through the replication stream, where they are applied to
+all hosts, not just one. This is also a very good improvement over the industry
+practice of online schema change, which also must run on all hosts.
+Since Vitess’s backup / restore and reparent processes
+are very reliable (they need to be reliable on their own, independently of this
+process!), this does not add much more complexity to a running system.</p>
 
-<p>A topo server stores information to help VtGate navigate the query to the right VtTablets. It contains keyspace to shards mappings, keyspace id to shards mappings and ports that a VtTablet listens to (EndPoint). VtGate caches this information in memory and periodically updates it if changes have happened in the topo server.</p>
+<p>However, the pivot operations are fairly involved, and may take a long time, so
+they need to be resilient and automated. We are in the process of streamlining
+them, with the goal of making them completely automated.</p>
 
-<h2 id="streaming-query">Streaming Query</h2>
+<h2 id="update-stream">Update Stream</h2>
 
-<p>Generally speaking, a streaming query means query results will be returned as a stream. In Vitess&#39; case, both VtGate and VtTablet will send results back as soon as it is available. VtTablet by default will collect a fixed number of rows returned from MySQL, send them back to VtGate and repeats the above step until all rows have been returned.</p>
+<p>Since the replication stream also contains comments of which primary key is
+affected by a change, it is possible to look at the replication stream and know
+exactly what objects have changed. This Vitess feature is called Update Stream.</p>
 
-<h2 id="scatter-query">Scatter Query</h2>
+<p>By subscribing to the Update Stream for a given shard, one can know what values
+change. This stream can be used to create a stream of data changes (export to an
+Apache Kafka for instance), or even invalidate an application layer cache.</p>
 
-<p>A scatter query, as its name indicates, will hit multiple shards. In Vitess, a scatter query is recognized once VtGate determines a query needs to hit multiple VtTablets. VtGate then sends the query to these VtTablets, assembles the result after receiving all responses and returns the combined result to the client.</p>
+<p>Note: the Update Stream only reliably contains the primary key values of the
+rows that have changed, not the actual values for all columns. To get these
+values, it is necessary to re-query the database.</p>
+
+<p>We have plans to make this Update Stream feature more consistent, very
+resilient, fast, and transparent to sharding.</p>
 
       </div>
     </div>
