@@ -93,7 +93,11 @@
         <li class="submenu">
           <h4 class="arrow-r">Getting Started</h4>
           <ul style="display: none">
-            <li><a href="/getting-started/">Run Vitess on Kubernetes</a></li>
+            <li style="padding-bottom: 0"><a href="/getting-started/">Run Vitess on Kubernetes</a>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/getting-started/docker-build.html">Custom Docker Build</a></li>
+              </ul>
+            </li>
             <li><a href="/getting-started/local-instance.html">Run Vitess Locally</a></li>
           </ul>
         </li>
@@ -480,6 +484,20 @@ forum.
 Docker Build
 
 To ru...</p>
+</article>
+
+
+  <article class="tile" itemscope itemtype="http://schema.org/Article">
+  <a href="http://vitess.io/doc/DockerBuild/" title="DockerBuild" class="post-teaser">
+    <img src="http://vitess.io/images/400x250.gif" alt="teaser" itemprop="image">
+  </a>
+<!--  <p class="entry-date date published"><time datetime="2015-01-01" itemprop="datePublished">January 01, 2015</time></p> -->
+  <h2 class="post-title" itemprop="name"><a href="http://vitess.io/doc/DockerBuild/">DockerBuild</a></h2>
+  <p class="post-excerpt" itemprop="description">By default, the Kubernetes configs
+point to the vitess/lite image on Docker Hub.
+This image is built periodically from the master branch on GitHub.
+
+If you w...</p>
 </article>
 
 

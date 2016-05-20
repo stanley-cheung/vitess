@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vitess / Client Libraries</title>
+    <title>Vitess / Custom Docker Build</title>
 
         <!-- Webfont -->
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
@@ -35,7 +35,7 @@
 
 
     <!-- metadata -->
-    <meta name="og:title" content="Vitess / Client Libraries"/>
+    <meta name="og:title" content="Vitess / Custom Docker Build"/>
     <meta name="og:image" content="/images/vitess-logo-large-cropped-2.png"/>
     <meta name="og:description" content="Servers and tools that scale MySQL databases for the web in cloud architectures or on dedicated hardware."/>
 
@@ -151,7 +151,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-9">
-        <h1>Client Libraries</h1>
+        <h1>Custom Docker Build</h1>
       </div>
     </div>
   </div>
@@ -229,131 +229,59 @@
     </div>
     <div class="col-md-7" id="centerCol">
       <div id="centerTextCol">
-        <p>You can access your Vitess cluster using a variety of clients and
-programming languages. Vitess client libraries help your client
-application to more easily talk to your storage system to query data.</p>
+        <p>By default, the <a href="https://github.com/youtube/vitess/tree/master/examples/kubernetes">Kubernetes configs</a>
+point to the <code class="prettyprint">vitess/lite</code> image on <a href="https://hub.docker.com/u/vitess/">Docker Hub</a>.
+This image is built periodically from the master branch on GitHub.</p>
 
-<p>Vitess&#39; service is exposed through a
-<a href="https://developers.google.com/protocol-buffers/docs/proto3">proto3</a>
-service definition. Vitess supports <a href="http://www.grpc.io/">gRPC</a>,
-and you can use the
-<a href="https://developers.google.com/protocol-buffers/docs/proto?hl=en#generating">proto compiler</a>
-to generate stubs that can call the API in any language that the
-gRPC framework supports.</p>
+<p>If you want to customize this image, you can build your own like this:</p>
 
-<p>This document explains the client library strategy for Vitess.</p>
+<ol>
+<li><p>Install <a href="https://www.docker.com/">Docker</a> on your workstation.</p>
 
-<h2 id="core-principles">Core Principles</h2>
+<p>Our scripts also assume you can run the <code class="prettyprint">docker</code> command without <code class="prettyprint">sudo</code>,
+which you can do by <a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#create-a-docker-group">setting up a docker group</a>.</p></li>
+<li><p>Create an account on <a href="https://docs.docker.com/docker-hub/">Docker Hub</a> and
+then <code class="prettyprint">docker login</code> to it.</p></li>
+<li><p>Go to your <code class="prettyprint">github.com/youtube/vitess</code> directory.</p></li>
+<li><p>Build the <code class="prettyprint">vitess/base</code> image from your working copy.
+This image will incorporate any local code changes you&#39;ve made,
+such as adding plugins.</p>
 
-<p>Vitess client libraries follow these core principles:</p>
-
-<ul>
-<li>Libraries fully implement the server API and provide access to all
-API methods, which support the following types of functions:
-
-<ul>
-<li>Transactions (begin, commit, rollback)</li>
-<li>Queries targeted to a specific shards or groups of shards</li>
-<li>Queries targeted based on sharding key values</li>
-<li>Queries that monitor sharding configurations</li>
-<li>MapReduce operations</li>
-</ul></li>
-<li>Libraries expose an identical set of well-documented error codes.</li>
-<li>Libraries provide a single-connection abstraction to the
-<code>vtgate</code> service. The connection object should be
-thread-safe, if applicable, and should support multiplexing for
-streaming queries, transactions, and other operations that rely
-on multiple queries.</li>
-<li>A low-level plug-in abstraction enables the transport to be plugged
-in so that the application can use different RPC frameworks. For
-instance, within Google, we use proto2 objects with an internal
-RPC system.<br class="bigbreak"><strong>Note:</strong> If the proto3 library is available in
-your language, we recommend that your API calls use the data types
-generated from our .proto files.</li>
-<li>A high-level object abstraction allows the user to execute transactions
-without having to keep track of the database session.</li>
-<li>Libraries support <code>vtgateclienttest</code>, enabling you to
-fully unit-test all API calls. <code>vtgateclienttest</code> is
-a small server that simulates a real <code>vtgate</code> server
-and returns specific responses to allow for full client feature
-coverage.</li>
-</ul>
-
-<h2 id="language-specific-considerations">Language-specific considerations</h2>
-
-<ul>
-<li>Each client library should support language-specific, idiomatic
-constructs to simplify application development in that language.</li>
-<li>Client libraries should integrate with the following language-specific
-database drivers, though this support is not yet provided in some cases:
-
-<ul>
-<li>Go: <a href="http://golang.org/pkg/database/sql/">database/sql package</a> (done)</li>
-<li>Java: <a href="https://docs.oracle.com/javase/tutorial/jdbc/index.html">JDBC</a>
-compliance (in progress)</li>
-<li>PHP: <a href="http://php.net/manual/en/intro.pdo.php">PHP Data Objects (PDO)</a>
-compliance (in progress)</li>
-<li>Python: <a href="https://www.python.org/dev/peps/pep-0249/">DB API</a> compliance
-(done)</li>
-</ul></li>
-<li>Libraries provide a thin wrapper around the proto3 service definitions.
-Those wrappers could be extended with adapters to higher level libraries
-like SQLAlchemy (Python) or JDBC (Java), with other object-based helper
-classes in the relevant language, or both.</li>
-<li>If a well-known MapReduce framework exists for the language, the client
-library should provide a data source and a data sink. For example, you
-can read data from Vitess inside a Hadoop MapReduce job and save the
-output into Vitess.</li>
-</ul>
-
-<h2 id="available-libraries">Available libraries</h2>
-
-<h3 id="go">Go</h3>
-
-<p>The Go client interface is in the
-<a href="https://godoc.org/github.com/youtube/vitess/go/vt/vtgate/vtgateconn">&quot;vtgateconn&quot; package</a>.</p>
-
-<p>There are multiple implementations available. We recommend to use the
-<a href="https://godoc.org/github.com/youtube/vitess/go/vt/vtgate/grpcvtgateconn">&quot;grpc&quot; implementation</a>.
-Load it by importing its package:</p>
-<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&quot;github.com/youtube/vitess/go/vt/vtgate/grpcvtgateconn&quot;</span>
+<p>You can choose one of the following flavors:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>make docker_base         <span class="c"># MySQL Community Edition</span>
+vitess<span class="nv">$ </span>make docker_base_percona <span class="c"># Percona Server</span>
+vitess<span class="nv">$ </span>make docker_base_mariadb <span class="c"># MariaDB</span>
 </code></pre></div>
-<p>When you connect to vtgate, use the
-<a href="https://godoc.org/github.com/youtube/vitess/go/vt/vtgate/vtgateconn#DialProtocol"><code class="prettyprint">DialProtocol</code> method</a>
-and specify &quot;grpc&quot; as protocol.
-Alternatively, you can set the
-<a href="https://github.com/youtube/vitess/blob/ff800b2a1801f0bb8b0c29a701d9c0988bf827e2/go/vt/vtgate/vtgateconn/vtgateconn.go#L27">command line flag &quot;vtgate_protocol&quot;</a>
-to &quot;grpc&quot;.</p>
+<p><strong>Note:</strong> If you don&#39;t have a <code class="prettyprint">vitess/bootstrap:&lt;flavor&gt;</code> image built,
+Docker will download our bootstrap image from Docker Hub.
+Usually, you won&#39;t need to <a href="https://github.com/youtube/vitess/blob/master/docker/bootstrap/README.md">build your own bootstrap image</a>
+unless you edit <a href="https://github.com/youtube/vitess/blob/master/bootstrap.sh">bootstrap.sh</a>
+or <a href="https://github.com/youtube/vitess/blob/master/vendor/vendor.json">vendor.json</a>,
+for example to add new dependencies.</p></li>
+<li><p>Build the <code class="prettyprint">vitess/lite</code> image from the <code class="prettyprint">vitess/base</code> image you built.
+This runs a script that extracts only the files needed to run Vitess,
+whereas <code class="prettyprint">vitess/base</code> contains everything needed for development work.
+You will be asked to authenticate with <code class="prettyprint">sudo</code>, which is needed to fix up
+some file permissions.</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>make docker_lite
+</code></pre></div></li>
+<li><p>Re-tag the image under your personal repository, then upload it.</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>docker tag -f vitess/lite yourname/vitess
+vitess<span class="nv">$ </span>docker push yourname/vitess
+</code></pre></div></li>
+<li><p>Change the Kubernetes configs to point to your personal repository:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>sed -i -e <span class="s1">&#39;s,image: vitess/lite,image: yourname/vitess:latest,&#39;</span> *.yaml
+</code></pre></div>
+<p>Adding the <code class="prettyprint">:latest</code> label at the end of the image name tells Kubernetes
+to check for a newer image every time a pod is launched.
+When you push a new version of your image, any new pods will use it
+automatically without you having to clear the Kubernetes image cache.</p>
 
-<p>The Go client interface has multiple Execute* methods for different use-cases
-and sharding configurations. When you start off with an unsharded database, we
-recommend to use the
-<a href="https://godoc.org/github.com/youtube/vitess/go/vt/vtgate/vtgateconn#VTGateConn.ExecuteShards">ExecuteShards method</a>
-and pass &quot;0&quot; as only shard.</p>
-
-<p>For an example how to use the Go client, see the end-to-end test
-<a href="https://github.com/youtube/vitess/blob/master/go/vt/vttest/local_cluster_test.go">local_cluster_test.go</a>.
-From this test file, you can also reuse the &quot;LaunchVitess&quot; call to
-instantiate a minimal Vitess setup (including a MySQL server). This way you can
-test your application against an actual instance.</p>
-
-<h3 id="java">Java</h3>
-
-<ul>
-<li><a href="https://github.com/youtube/vitess/blob/master/java/client/src/main/java/com/youtube/vitess/client/VTGateConn.java">Java client</a></li>
-</ul>
-
-<h3 id="php">PHP</h3>
-
-<ul>
-<li><a href="https://github.com/youtube/vitess/tree/master/php">PHP client</a></li>
-</ul>
-
-<h3 id="python">Python</h3>
-
-<ul>
-<li><a href="https://github.com/youtube/vitess/blob/master/py/vtdb/vtgate_client.py">Python client</a></li>
-</ul>
+<p>Once you&#39;ve stabilized your image, you&#39;ll probably want to replace <code class="prettyprint">:latest</code>
+with a specific label that you change each time you make a new build,
+so you can control when pods update.</p></li>
+<li><p>Launch <a href="http://vitess.io/getting-started/">Vitess on Kubernetes</a> as usual.</p></li>
+</ol>
 
       </div>
     </div>
