@@ -927,7 +927,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">VtGateExecute -server &lt;vtgate&gt; [-bind_variables &lt;JSON map&gt;] [-connect_timeout &lt;connect timeout&gt;] [-tablet_type &lt;tablet type&gt;] [-json] &lt;sql&gt;</pre>
+<pre class="command-example">VtGateExecute -server &lt;vtgate&gt; [-bind_variables &lt;JSON map&gt;] [-connect_timeout &lt;connect timeout&gt;] [-keyspace &lt;default keyspace&gt;] [-tablet_type &lt;tablet type&gt;] [-json] &lt;sql&gt;</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -947,6 +947,11 @@
 <td style="text-align: left">json</td>
 <td style="text-align: left">Boolean</td>
 <td style="text-align: left">Output JSON instead of human-readable table</td>
+</tr>
+<tr>
+<td style="text-align: left">keyspace</td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">default keyspace to use</td>
 </tr>
 <tr>
 <td style="text-align: left">server</td>
