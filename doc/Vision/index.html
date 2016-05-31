@@ -251,10 +251,9 @@ kind of scalability that NoSQL databases provide.</p>
 
 <ul>
 <li><em>Scalability</em>: This is achieved by replication and sharding.</li>
-<li><em>Efficiency</em>: This is achieved by a proxy server (vttablet) that mediates
-all queries and connections.
-It also utilizes a more efficient rowcache to short-cut some of the queries.
-This effectively increases a typical MySQL&#39;s serving capacity.</li>
+<li><em>Efficiency</em>: This is achieved by a proxy server (vttablet) that
+multiplexes queries into a fixed-size connection pool, and rewrites
+updates by primary key to speed up slave applier threads.</li>
 <li><em>Manageability</em>: As soon as you add replication and sharding that span
 across multiple data centers, the number of servers spirals out of control.
 Vitess provides a set of tools backed by a lockserver (zookeeper) to
