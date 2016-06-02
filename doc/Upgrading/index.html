@@ -265,12 +265,12 @@
 
 <h2 id="upgrading-the-master-tablet">Upgrading the Master Tablet</h2>
 
-<p>The <code class="prettyprint">master</code> tablet of each shard should always be updated at last in the following manner:</p>
+<p>The <em>master</em> tablet of each shard should always be updated at last in the following manner:</p>
 
 <ul>
-<li>verify that all <code class="prettyprint">replica</code> tablets in the shard have been upgraded</li>
-<li>reparent away from the current <code class="prettyprint">master</code> to a <code class="prettyprint">replica</code> tablet</li>
-<li>upgrade old <code class="prettyprint">master</code> tablet</li>
+<li>verify that all <em>replica</em> tablets in the shard have been upgraded</li>
+<li>reparent away from the current <em>master</em> to a <em>replica</em> tablet</li>
+<li>upgrade old <em>master</em> tablet</li>
 </ul>
 
       </div>
