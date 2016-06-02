@@ -117,6 +117,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -197,6 +198,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -677,6 +679,14 @@ also automatically restore from the latest backup and then resume replication.</
 an NFS directory there. You can also change the location by setting the
 <code class="prettyprint">-file_backup_storage_root</code> flag on <em>vtctld</em> and <em>vttablet</em>, as demonstrated
 in <code class="prettyprint">vtctld-up.sh</code> and <code class="prettyprint">vttablet-up.sh</code>.</p></li>
+<li><p><strong>Initialize Vitess Routing Schema</strong></p>
+
+<p>In the examples, we are just using a single database with no specific
+configuration. So we just need to make that (empty) configuration visible
+for serving. This is done by running the following command:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/local<span class="nv">$ </span>./lvtctl.sh RebuildVSchemaGraph
+</code></pre></div>
+<p>(As it works, this command will not display any output.)</p></li>
 <li><p><strong>Start vtgate</strong></p>
 
 <p>Vitess uses <em>vtgate</em> to route each client query to

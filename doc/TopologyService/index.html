@@ -117,6 +117,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -197,6 +198,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -395,10 +397,18 @@ the values are list of shards to use for serving.</li>
 <li>it also contains the global Keyspace fields, copied for fast access.</li>
 </ul>
 
-<p>It can be rebuilt by running <code class="prettyprint">vtctl RebuildKeyspaceGraph</code>. It is not
-automatically rebuilt when adding new tablets in a cell, as this would cause too
-much overhead and is only needed once per cell/keyspace. It may also be changed
+<p>It can be rebuilt by running <code class="prettyprint">vtctl RebuildKeyspaceGraph</code>. It is
+automatically rebuilt when a tablet starts up in a cell and the SrvKeyspace
+for that cell / keyspace doesn&#39;t exist yet. It will also be changed
 during horizontal and vertical splits.</p>
+
+<h4 id="srvvschema">SrvVSchema</h4>
+
+<p>It is the local roll-up for the VSchema. It contains the VSchema for all
+keyspaces in a single object.</p>
+
+<p>It can be rebuilt by running <code class="prettyprint">vtctl RebuildVSchemaGraph</code>. It is automatically
+rebuilt when using <code class="prettyprint">vtctl ApplyVSchema</code> (unless prevented by flags).</p>
 
 <h2 id="workflows-involving-the-topology-server">Workflows Involving the Topology Server</h2>
 
@@ -465,6 +475,7 @@ recommended, for reliability reasons.</p>
 <li>Tablet: <code class="prettyprint">/zk/&lt;cell&gt;/vt/tablets/&lt;uid&gt;</code></li>
 <li>Replication Graph: <code class="prettyprint">/zk/&lt;cell&gt;/vt/replication/&lt;keyspace&gt;/&lt;shard&gt;</code></li>
 <li>SrvKeyspace: <code class="prettyprint">/zk/&lt;cell&gt;/vt/ns/&lt;keyspace&gt;</code></li>
+<li>SrvVSchema: <code class="prettyprint">/zk/&lt;cell&gt;/vt/vschema</code></li>
 </ul>
 
 <p>We provide the &#39;zk&#39; utility for easy access to the topology data in
@@ -496,6 +507,7 @@ contains the object to lock.</p>
 <li>Tablet: <code class="prettyprint">/vt/tablets/&lt;cell&gt;-&lt;uid&gt;/_Data</code></li>
 <li>Replication Graph: <code class="prettyprint">/vt/replication/&lt;keyspace&gt;/&lt;shard&gt;/_Data</code></li>
 <li>SrvKeyspace: <code class="prettyprint">/vt/ns/&lt;keyspace&gt;/_Data</code></li>
+<li>SrvVSchema: <code class="prettyprint">/vt/ns/_VSchema</code></li>
 </ul>
 
       </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vitess / Presentations and Videos</title>
+    <title>Vitess / Upgrading</title>
 
         <!-- Webfont -->
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
@@ -35,7 +35,7 @@
 
 
     <!-- metadata -->
-    <meta name="og:title" content="Vitess / Presentations and Videos"/>
+    <meta name="og:title" content="Vitess / Upgrading"/>
     <meta name="og:image" content="/images/vitess-logo-large-cropped-2.png"/>
     <meta name="og:description" content="Servers and tools that scale MySQL databases for the web in cloud architectures or on dedicated hardware."/>
 
@@ -152,7 +152,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-9">
-        <h1>Presentations and Videos</h1>
+        <h1>Upgrading</h1>
       </div>
     </div>
   </div>
@@ -231,65 +231,47 @@
     </div>
     <div class="col-md-7" id="centerCol">
       <div id="centerTextCol">
-        <h2 id="percona-live-2016">Percona Live 2016</h2>
+        <h1 id="upgrading-a-vitess-installation">Upgrading a Vitess Installation</h1>
 
-<p><a href="https://github.com/sougou">Sugu</a> and <a href="https://github.com/enisoc">Anthony</a>
-showed what it looks like to use Vitess now that
-<a href="http://vitess.io/overview/concepts.html#keyspace-id">Keyspace IDs</a> can be
-completely hidden from the application. They gave a live demo of
-<a href="http://vitess.io/user-guide/sharding-kubernetes.html">resharding the Guestbook sample app</a>,
-which now knows nothing about shards, and explained how new features in VTGate
-make all of this possible.</p>
+<p>This document highlights things to look after when upgrading a Vitess production installation to a newer Vitess release.</p>
 
-<iframe src="http://docs.google.com/gview?url=http://vitess.io/resources/percona-2016.pdf&embedded=true" style="width:643px; height:379px; margin-top: 20px;" frameborder="0"></iframe>
+<p>Generally speaking, upgrading Vitess is a safe and and easy process because it is explicitly designed for it. This is because in YouTube we follow the practice of releasing new versions often (usually from the tip of the Git master branch).</p>
 
-<div style="text-align: right; width: 100%; margin-bottom:20px"><a href="http://vitess.io/resources/percona-2016.pdf">download slides</a></div>
+<h2 id="compatibility">Compatibility</h2>
 
-<h2 id="coreos-meetup-january-2016">CoreOS Meetup, January 2016</h2>
+<p>As of June 2016 we have not defined formal compatibility guarantees we will promise for future open-source releases. In general, we plan to follow industry standards e.g. compatibility when upgrading to a newer minor version is guaranteed. Upgrades to a higher major may require manual configuration changes and will be mentioned in the changelog.</p>
 
-<p>Vitess team member <a href="https://github.com/enisoc">Anthony Yeh</a>&#39;s talk at
-the <a href="http://www.meetup.com/coreos/events/228233948/">January 2016 CoreOS Meetup</a>
-discussed challenges and techniques for running distributed databases
-within Kubernetes, followed by a deep dive into the design trade-offs
-of the <a href="https://github.com/youtube/vitess/tree/master/examples/kubernetes">Vitess on Kubernetes</a>
-deployment templates.</p>
+<h2 id="upgrade-order">Upgrade Order</h2>
 
-<iframe src="http://docs.google.com/gview?url=http://vitess.io/resources/coreos-meetup-2016-01-27.pdf&embedded=true" style="width:643px; height:379px; margin-top: 20px;" frameborder="0"></iframe>
+<p>We recommend to upgrade the different components in the following order:</p>
 
-<div style="text-align: right; width: 100%; margin-bottom:20px"><a href="http://vitess.io/resources/coreos-meetup-2016-01-27.pdf">download slides</a></div>
+<ul>
+<li>vtctld</li>
+<li>vtgate</li>
+<li>vttablet</li>
+</ul>
 
-<h2 id="oracle-openworld-2015">Oracle OpenWorld 2015</h2>
+<h2 id="canary-testing">Canary Testing</h2>
 
-<p>Vitess team member <a href="https://github.com/enisoc">Anthony Yeh</a>&#39;s talk at
-Oracle OpenWorld 2015 focused on
-what the <a href="http://cncf.io">Cloud Native Computing</a> paradigm means when
-applied to MySQL in the cloud. The talk also included a deep dive into
-<a href="http://vitess.io/user-guide/sharding.html#resharding">transparent, live resharding</a>, one of the key
-features of Vitess that makes it well-adapted for a Cloud Native environment.</p>
+<p>Within the vtgate and vttablet components, we recommend to <a href="http://martinfowler.com/bliki/CanaryRelease.html">canary</a> single instances, keyspaces and cells. Upgraded canary instances can &quot;bake&quot; for several hours or days to verify that the upgrade did not introduce a regression. Eventually, you can upgrade the remaining instances.</p>
 
-<iframe src="http://docs.google.com/gview?url=http://vitess.io/resources/openworld-2015-vitess.pdf&embedded=true" style="width:643px; height:379px; margin-top: 20px;" frameborder="0"></iframe>
+<h2 id="rolling-upgrades">Rolling Upgrades</h2>
 
-<div style="text-align: right; width: 100%; margin-bottom:20px"><a href="http://vitess.io/resources/openworld-2015-vitess.pdf">download slides</a></div>
+<p>We recommend to automate the upgrade process with a configuration management software. It will reduce the possibility of human errors and simplify the process of managing all instances.</p>
 
-<h2 id="percona-live-2015">Percona Live 2015</h2>
+<p>As of June 2016 we do not have templates for any major open-source configuration management software because our internal upgrade process is based on a proprietary software. Therefore, we invite open-source users to contribute such templates.</p>
 
-<p>Vitess team member <a href="https://github.com/enisoc">Anthony Yeh</a>&#39;s talk at
-Percona Live 2015 provided an overview of Vitess as well as an explanation
-of how Vitess has evolved to live in a containerized world with
-Kubernetes and Docker.</p>
+<p>Any upgrade should be a rolling release i.e. usually one tablet at a time within a shard. This ensures that the remaining tablets continue serving live traffic and there is no interruption.</p>
 
-<iframe src="http://docs.google.com/gview?url=http://vitess.io/resources/percona-2015-vitess-and-kubernetes.pdf&embedded=true" style="width:643px; height:379px; margin-top: 20px;" frameborder="0"></iframe>
+<h2 id="upgrading-the-master-tablet">Upgrading the Master Tablet</h2>
 
-<div style="text-align: right; width: 100%; margin-bottom:20px"><a href="https://github.com/youtube/vitess/blob/master/doc/slides/Percona2015.pptx?raw=true">download slides</a></div>
+<p>The <code class="prettyprint">master</code> tablet of each shard should always be updated at last in the following manner:</p>
 
-<h2 id="google-i-o-2014-scaling-with-go-youtube-39-s-vitess">Google I/O 2014 - Scaling with Go: YouTube&#39;s Vitess</h2>
-
-<p>In this talk, <a href="https://github.com/sougou">Sugu Sougoumarane</a>
-from the Vitess team talks about how Vitess
-solved YouTube&#39;s scalability problems as well as about tips and techniques
-used to scale with Go.<br><br></p>
-
-<iframe width="640" height="360" src="https://www.youtube.com/embed/midJ6b1LkA0" frameborder="0" allowfullscreen></iframe>
+<ul>
+<li>verify that all <code class="prettyprint">replica</code> tablets in the shard have been upgraded</li>
+<li>reparent away from the current <code class="prettyprint">master</code> to a <code class="prettyprint">replica</code> tablet</li>
+<li>upgrade old <code class="prettyprint">master</code> tablet</li>
+</ul>
 
       </div>
     </div>

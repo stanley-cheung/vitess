@@ -117,6 +117,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -197,6 +198,7 @@
             </li>
             <li><a href="/user-guide/vitess-replication.html">Vitess and Replication</a></li>
             <li><a href="/user-guide/transport-security-model.html">Transport Security Model</a></li>
+            <li><a href="/user-guide/upgrading.html">Upgrading</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -639,6 +641,14 @@ replication and stop serving during data copy to create a consistent snapshot.</
 <span class="c">### example output:</span>
 <span class="c"># 2015-10-21.042940.test-0000000104</span>
 </code></pre></div></li>
+<li><p><strong>Initialize Vitess Routing Schema</strong></p>
+
+<p>In the examples, we are just using a single database with no specific
+configuration. So we just need to make that (empty) configuration visible
+for serving. This is done by running the following command:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh RebuildVSchemaGraph
+</code></pre></div>
+<p>(As it works, this command will not display any output.)</p></li>
 <li><p><strong>Start vtgate</strong></p>
 
 <p>Vitess uses <a href="http://vitess.io/overview/#vtgate">vtgate</a> to route each client
