@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -413,6 +416,18 @@ Here are some initial considerations:
 
 
 Global Transaction IDs: Vitess require...</p>
+</article>
+
+
+  <article class="tile" itemscope itemtype="http://schema.org/Article">
+  <a href="http://vitess.io/doc/PivotSchemaChanges/" title="PivotSchemaChanges" class="post-teaser">
+    <img src="http://vitess.io/images/400x250.gif" alt="teaser" itemprop="image">
+  </a>
+<!--  <p class="entry-date date published"><time datetime="2015-01-01" itemprop="datePublished">January 01, 2015</time></p> -->
+  <h2 class="post-title" itemprop="name"><a href="http://vitess.io/doc/PivotSchemaChanges/">PivotSchemaChanges</a></h2>
+  <p class="post-excerpt" itemprop="description">Pivot Schema Changes: A Tutorial
+
+This page describes how to apply long-running schema changes in Vitess/MySQL without disrupting ongoing operations. Example...</p>
 </article>
 
 

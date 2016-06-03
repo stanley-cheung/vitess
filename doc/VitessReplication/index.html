@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -189,7 +192,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -328,15 +334,14 @@ based updates, but the replication stream is very friendly for schema changes.</
 key affected by that statement. This allows us to produce an Update Stream (see
 section below).</p>
 
-<h2 id="vitess-pivot">Vitess Pivot</h2>
+<h2 id="vitess-pivot-schema-changes">Vitess Pivot Schema Changes</h2>
 
-<p>In a Vitess shard, we have a master and multiple slaves (replicas, batch,
-…). Slaves are brought up by restoring a recent backup, and catching up on
-replication. It is possible to efficiently and safely re-parent the master
-to a slave on demand. We use statement based replication. The combination
-of all these features makes our pivot workflow work very well.</p>
+<p>Within YouTube, we also use a combination of statement based replication and
+backups to apply long-running schema changes without disrupting ongoing
+operations. See the <a href="/user-guide/pivot-schema-changes.html">pivot tutorial</a>
+for a detailed example.</p>
 
-<p>The pivot operation works as follows:</p>
+<p>This operation, internally dubbed as <strong>pivot</strong>, works as follows:</p>
 
 <ul>
 <li>Pick a slave, take it out of service. It is not used by clients any more.</li>

@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -189,7 +192,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -239,6 +245,8 @@ primary key information, and so forth.</p>
 <p>This document describes the <code><a href="/reference/vtctl.html">vtctl</a></code>
 commands that you can use to <a href="#reviewing-your-schema">review</a> or
 <a href="#changing-your-schema">update</a> your schema in Vitess.</p>
+
+<p>Note that this functionality is not recommended for long-running schema changes. In such cases, we recommend to do a <a href="/user-guide/pivot-schema-changes.html">pivot schema change</a> instead.</p>
 
 <h2 id="reviewing-your-schema">Reviewing your schema</h2>
 
@@ -342,7 +350,7 @@ In this stage, Vitess copies the current schema into a temporary
 database, applies the change there to validate it, and retrieves
 the resulting schema. By doing so, Vitess verifies that the change
 succeeds without actually touching live database tables.</li>
-<li>It applies the Sql command on the master tablet in each shard.</li>
+<li>It applies the SQL command on the master tablet in each shard.</li>
 </ol>
 
 <p>The following sample command applies the SQL in the <strong>user_table.sql</strong>
@@ -382,6 +390,9 @@ shard&#39;s master tablet has 100,000 rows or less.</li>
 <li>For all other statements, the table on the shard&#39;s master tablet
 must have 2 million rows or less.</li>
 </ul>
+
+<p>If a schema change gets rejected because it affects too many rows, you can specify the flag <code class="prettyprint">-allow_long_unavailability</code> to tell <code class="prettyprint">ApplySchema</code> to skip this check.
+However, we do not recommend this. Instead, you should apply large schema changes by following the <a href="/user-guide/pivot-schema-changes.html">pivot process</a>.</p>
 
       </div>
     </div>

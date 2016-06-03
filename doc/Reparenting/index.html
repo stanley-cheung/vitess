@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -189,7 +192,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -257,7 +263,7 @@ replicate from that master.</p>
 
 <h2 id="mysql-requirements">MySQL requirements</h2>
 
-<p>Vitess supports <a href="https://dev.mysql.com/doc/refman/5.6/en/replication-gtids-howto.html">MySQL 5.6</a> and <a href="https://mariadb.com/kb/en/mariadb/global-transaction-id/">MariaDB</a> implementations.</p>
+<p>Vitess supports <a href="https://dev.mysql.com/doc/refman/5.6/en/replication-gtids-howto.html">MySQL 5.6</a>, <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-gtids-howto.html">MySQL 5.7</a> and <a href="https://mariadb.com/kb/en/mariadb/global-transaction-id/">MariaDB</a> implementations.</p>
 
 <h3 id="gtids">GTIDs</h3>
 
@@ -313,7 +319,7 @@ running.</p>
 <li>Puts the current master tablet in read-only mode.</li>
 <li>Shuts down the current master&#39;s query service, which is the part of
 the system that handles user SQL queries. At this point, Vitess does
-not handle any user SQL queries utnil the new master is configured
+not handle any user SQL queries until the new master is configured
 and can be used a few seconds later.</li>
 <li>Retrieves the current master&#39;s replication position.</li>
 <li>Instructs the master-elect tablet to wait for replication data and

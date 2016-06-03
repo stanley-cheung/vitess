@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -189,7 +192,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -271,7 +277,7 @@ without any real downtime for your application.</p>
 <h2 id="range-based-sharding">Range-based Sharding</h2>
 
 <p>Vitess uses range-based sharding to manage data across multiple shards.
-(Vitess can also support a <a href="#custom-sharding">custom sharding</a> scheme.</p>
+(Vitess can also support a <a href="#custom-sharding">custom sharding</a> scheme.)</p>
 
 <p>In range-based sharding, each record in a keyspace is associated with
 a sharding key that is stored with the record. The sharding key value
@@ -321,6 +327,8 @@ sharding key column in each table has the same name and column type.</p>
 <p>A common example of a sharding key is the 64-bit hash of a user ID. The
 hashing function ensures that the sharding keys are evenly distributed
 in the space.</p>
+
+<p><strong>Note:</strong> If the vtgate v3 API is used, the sharding key value is no longer materialized. Instead, vtgate can calculate it on the fly when reading and inserting data. (A valid VSchema is required to tell vtgate how to calculate the sharding key value.)</p>
 
 <h3 id="key-ranges-and-partitions">Key Ranges and Partitions</h3>
 
@@ -412,7 +420,7 @@ would typically perform for different types of requirements:</p>
 </tr>
 <tr>
 <td>Reclaim overprovisioned resources</td>
-<td>Merge shards and/or keyspaces (<em>not implemented yet</em>)</td>
+<td>Merge shards and/or keyspaces</td>
 </tr>
 <tr>
 <td>Increase geo-diversity</td>

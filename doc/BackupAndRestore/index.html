@@ -108,7 +108,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -189,7 +192,10 @@
             <li><a href="/user-guide/client-libraries.html">Client Libraries</a>
             <li><a href="/user-guide/backup-and-restore.html">Backing Up Data</a>
             <li><a href="/user-guide/reparenting.html">Reparenting</a></li>
-            <li><a href="/user-guide/schema-management.html">Schema Management</a></li>
+            <li style="padding-bottom: 0"><a href="/user-guide/schema-management.html">Schema Management</a></li>
+              <ul style="display: block">
+                <li style="padding-bottom: 0"><a href="/user-guide/pivot-schema-changes.html">Pivot Schema Changes (Tutorial)</a></li>
+              </ul>
             <li style="padding-bottom: 0"><a href="/user-guide/sharding.html">Sharding</a>
               <ul style="display: block">
                 <li><a href="/user-guide/horizontal-sharding.html">Horizontal Sharding (Codelab)</a></li>
@@ -266,6 +272,7 @@ access to the location where you are storing backups.</p>
           Current plugin options available are:
           <ul>
           <li><code>gcs</code>: For Google Cloud Storage.</li>
+          <li><code>ceph</code>: For Ceph Object Gateway S3 API.</li>
           <li><code>file</code>: For NFS or any other filesystem-mounted network drive.</li>
           </ul>
       </td>
@@ -281,6 +288,10 @@ access to the location where you are storing backups.</p>
     <tr>
       <td><nobr><code>-gcs_backup_storage_bucket</code></nobr></td>
       <td>For the <code>gcs</code> plugin, this identifies the <a href="https://cloud.google.com/storage/docs/concepts-techniques#concepts">bucket</a> to use.</td>
+    </tr>
+    <tr>
+      <td><nobr><code>-ceph_backup_storage_config</code></nobr></td>
+      <td>For the <code>ceph</code> plugin, this identifies the path to a text file with a JSON object as configuration. The JSON object requires the following keys: <code>accessKey</code>, <code>secretKey</code>, <code>endPoint</code> and <code>bucket</code>.</td>
     </tr>
     <tr>
       <td><nobr><code>-restore_from_backup</code></nobr></td>
@@ -363,33 +374,19 @@ specified backup for a keyspace/shard.</p>
 
 <h2 id="bootstrapping-a-new-tablet">Bootstrapping a new tablet</h2>
 
-<p>The following steps explain how the backup process is used to bootstrap
-new tablets as part of the normal lifecyle of a shard:</p>
+<p>Bootstrapping a new tablet is almost identical to restoring an existing tablet.
+The only thing you need to be cautious about is that the tablet specifies its keyspace, shard and tablet type when it registers itself at the topology.
+Specifically, make sure that the following vttablet parameters are set:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">    -init_keyspace &lt;keyspace&gt;
+    -init_shard &lt;shard&gt;
+    -init_tablet_type replica<span class="p">|</span>rdonly
+</code></pre></div>
+<p>The bootstrapped tablet will restore the data from the backup and then apply changes, which occurred after the backup, by restarting replication.</p>
 
-<ol>
-<li><p>A shard is initially created without an existing backup, and all
-of the shard&#39;s tablets are started as spares.</p></li>
-<li><p>By default, Vitess enables health checks on each tablet. As long as
-these default checks are used, each tablet recognizes that replication
-is not running and remains in an unhealthy state as a spare tablet.</p></li>
-<li><p>After the requisite number of spare tablets is running, vtctl&#39;s
-<a href="/reference/vtctl.html#initshardmaster">InitShardMaster</a> command
-designates one tablet as the master. The remaining tablets are
-slaves of the master tablet. In the serving graph, the master
-tablet is in a healthy state, but the slaves remain unhealthy
-because no database exists.</p></li>
-<li><p>The initial schema is applied to the master using either usual schema
-change tools or vtctl&#39;s
-<a href="/reference/vtctl.html#copyschemashard">CopySchemaShard</a> command.
-That command is typically used during resharding to clone data to a
-destination shard. After being applied to the master tablet, the
-schema propagates to the slave tablets.</p></li>
-<li><p>The slave tablets all transition to a healthy state like
-<code>rdonly</code> or <code>replica</code>. At this point,
-the shard is working and functional.</p></li>
-<li><p>Once the shard is accumulating data, a cron job runs regularly to
-create new backups. Backups are created frequently enough to ensure
-that one is always available if needed.</p>
+<h2 id="backup-frequency">Backup Frequency</h2>
+
+<p>We recommend to take backups regularly e.g. you should set up a cron
+job for it.</p>
 
 <p>To determine the proper frequency for creating backups, consider
 the amount of time that you keep replication logs and allow enough
@@ -399,28 +396,7 @@ operation fails.</p>
 <p>For example, suppose you typically keep four days of replication logs
 and you create daily backups. In that case, even if a backup fails,
 you have at least a couple of days from the time of the failure to
-investigate and fix the problem.</p></li>
-<li><p>When a spare tablet comes up, it restores the latest backup, which
-contains data as well as the backup&#39;s replication position. The
-tablet then resets its master to the current shard master and starts
-replicating.</p>
-
-<p>This process is the same for new slave tablets and slave tablets that
-are being restarted. For example, to add a new rdonly tablet to your
-existing implementation, you would run the following steps:</p>
-
-<ol>
-<li>Run the vtctl <a href="/reference/vtctl.html#inittablet">InitTablet</a>
-command to create the new tablet as a spare. Specify the
-appropriate values for the <nobr><code>-keyspace</code></nobr>
-and <nobr><code>-shard</code></nobr> flags, enabling Vitess to
-identify the master tablet associated with the new spare.</li>
-<li>Start the tablet using the flags specified in the
-<a href="#prerequisites">Prerequisites</a> section. As described earlier in
-this step, the new tablet will load the latest backup, reset its
-master tablet, and start replicating.</li>
-</ol></li>
-</ol>
+investigate and fix the problem.</p>
 
 <h2 id="concurrency">Concurrency</h2>
 
