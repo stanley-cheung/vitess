@@ -246,6 +246,7 @@
 <li><a href="#keyspaces">Keyspaces</a></li>
 <li><a href="#queries">Queries</a></li>
 <li><a href="#replication-graph">Replication Graph</a></li>
+<li><a href="#resharding-throttler">Resharding Throttler</a></li>
 <li><a href="#schema-version-permissions">Schema, Version, Permissions</a></li>
 <li><a href="#serving-graph">Serving Graph</a></li>
 <li><a href="#shards">Shards</a></li>
@@ -1488,6 +1489,91 @@
 <li>The <code>&lt;cell&gt;</code> and <code>&lt;keyspace/shard&gt;</code> arguments are required for the <code>&lt;GetShardReplication&gt;</code> command. This error occurs if the command is not called with exactly 2 arguments.</li>
 </ul>
 
+<h2 id="resharding-throttler">Resharding Throttler</h2>
+
+<ul>
+<li><a href="#throttlermaxrates">ThrottlerMaxRates</a></li>
+<li><a href="#throttlersetmaxrate">ThrottlerSetMaxRate</a></li>
+</ul>
+
+<h3 id="throttlermaxrates">ThrottlerMaxRates</h3>
+
+<p>Returns the current max rate of all active resharding throttlers on the server.</p>
+
+<h4 id="example">Example</h4>
+
+<pre class="command-example">ThrottlerMaxRates -server &lt;vtworker or vttablet&gt;</pre>
+
+<h4 id="flags">Flags</h4>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Definition</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">server</td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">vtworker or vttablet to connect to</td>
+</tr>
+</tbody></table>
+
+<h4 id="arguments">Arguments</h4>
+
+<ul>
+<li><code>&lt;vtworker or vttablet&gt;</code> &ndash; Required.</li>
+</ul>
+
+<h4 id="errors">Errors</h4>
+
+<ul>
+<li>the ThrottlerSetMaxRate command does not accept any positional parameters This error occurs if the command is not called with exactly 0 arguments.</li>
+<li>error creating a throttler client for <code>&lt;server&gt;</code> &#39;%v&#39;: %v</li>
+<li>failed to get the throttler rate from <code>&lt;server&gt;</code> &#39;%v&#39;: %v</li>
+</ul>
+
+<h3 id="throttlersetmaxrate">ThrottlerSetMaxRate</h3>
+
+<p>Sets the max rate for all active resharding throttlers on the server.</p>
+
+<h4 id="example">Example</h4>
+
+<pre class="command-example">ThrottlerSetMaxRate -server &lt;vtworker or vttablet&gt; &lt;rate&gt;</pre>
+
+<h4 id="flags">Flags</h4>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Definition</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">server</td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">vtworker or vttablet to connect to</td>
+</tr>
+</tbody></table>
+
+<h4 id="arguments">Arguments</h4>
+
+<ul>
+<li><code>&lt;vtworker or vttablet&gt;</code> &ndash; Required.</li>
+<li><code>&lt;rate&gt;</code> &ndash; Required.</li>
+</ul>
+
+<h4 id="errors">Errors</h4>
+
+<ul>
+<li>the <code>&lt;rate&gt;</code> argument is required for the <code>&lt;ThrottlerSetMaxRate&gt;</code> command This error occurs if the command is not called with exactly one argument.</li>
+<li>failed to parse rate &#39;%v&#39; as integer value: %v</li>
+<li>error creating a throttler client for <code>&lt;server&gt;</code> &#39;%v&#39;: %v</li>
+<li>failed to set the throttler rate on <code>&lt;server&gt;</code> &#39;%v&#39;: %v</li>
+</ul>
+
 <h2 id="schema-version-permissions">Schema, Version, Permissions</h2>
 
 <ul>
@@ -2505,7 +2591,7 @@
 
 <h3 id="shardreplicationpositions">ShardReplicationPositions</h3>
 
-<p>Shows the replication status of each slave machine in the shard graph. In this case, the status refers to the replication lag between the master vttablet and the slave vttablet. In Vitess, data is always written to the master vttablet first and then replicated to all slave vttablets.</p>
+<p>Shows the replication status of each slave machine in the shard graph. In this case, the status refers to the replication lag between the master vttablet and the slave vttablet. In Vitess, data is always written to the master vttablet first and then replicated to all slave vttablets. Output is sorted by tablet type, then replication position. Use ctrl-C to interrupt command and see partial result if needed.</p>
 
 <h4 id="example">Example</h4>
 

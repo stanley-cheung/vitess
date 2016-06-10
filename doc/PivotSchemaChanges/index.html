@@ -247,14 +247,14 @@
 
 <p>One solution to realize such long-running schema changes is to use a temporary table and keep it in sync with triggers as <a href="http://code.openark.org/blog/mysql/online-alter-table-now-available-in-openark-kit">originally proposed by Shlomi</a> and further refined by others (<a href="https://www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html">Percona&#39;s pt-online-schema-change</a>, <a href="https://github.com/square/shift">Square&#39;s Shift</a>).</p>
 
-<p>Here we describe an alternative solution which uses a combination of MySQL&#39;s statement based replication and backups to apply the change to all tablets. Since the long-running schema change is applied to an offline tablet, ongoing operations are not affected. Internally within Google this process is dubbed <strong>pivot</strong> and therefore we refer to it by this name throughout the document.</p>
+<p>Here we describe an alternative solution which uses a combination of MySQL&#39;s statement based replication and backups to apply the changes to all tablets. Since the long-running schema changes are applied to an offline tablet, ongoing operations are not affected. Internally within Google this process is dubbed <strong>pivot</strong> and therefore we refer to it by this name throughout the document.</p>
 
 <p>This tutorial outlines the necessary manual steps for a pivot and is based on the <a href="http://vitess.io/getting-started/">Vitess Kubernetes Getting Started Guide</a>. Eventually, we plan to provide an integrated solution within Vitess which will automate the steps for you.</p>
 
 <p><strong>At the high level, a pivot comprises the following phases:</strong></p>
 
 <ol>
-<li>Apply the schema change to an offline tablet.</li>
+<li>Apply the schema changes to an offline tablet.</li>
 <li>Re-enable replication on the tablet, let it catch up and then create a backup of it.</li>
 <li>Restore all remaining tablets (excluding the master) from the backup.</li>
 <li>Failover the master to a replica tablet which has the new schema. Restore the old master from the backup.</li>
@@ -265,21 +265,21 @@
 
 <p>The key here is that the new schema is backward compatible with respect to statements sent by the app. The replication stream remains backward compatible as well because we use statement based replication. As a consequence, the new schema must not be used until it has been changed on all tablets. If the schema would have been used e.g. when an insert uses a new column, replication would break on tablets which have the old schema. Pivoting all tablets first ensures this doesn&#39;t happen.</p>
 
-<p>Also note that the change is applied to only one tablet and then all other tablets are restored from the backup. This is more efficient than applying the long-running change on every single tablet.</p>
+<p>Also note that the changes are applied to only one tablet and then all other tablets are restored from the backup. This is more efficient than applying the long-running changes on every single tablet.</p>
 
 <p>Now let&#39;s carry out an actual pivot based on our Guestbook example schema. We&#39;ll add a column to it.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
-<p>We assume that you have followed the [Kubernetes Getting Started Guide] up to and including the step &quot;9. Create a table&quot;.</p>
+<p>We assume that you have followed the <a href="http://vitess.io/getting-started/">Vitess Kubernetes Getting Started Guide</a> up to and including the step &quot;9. Create a table&quot;.</p>
 
 <p>Furthermore, we assume that the tablet with the ID 100 is the current master.</p>
 
 <h2 id="remarks">Remarks</h2>
 
-<p>Note: The example uses the <code class="prettyprint">vtctl ExecuteFetchAsDba</code> command for demonstration purposes only. It is not recommended for daily operations since queries are executed with SUPER rights and e.g. can insert data on a read-only slave.</p>
+<p>Note: The example uses the <code class="prettyprint">vtctl ExecuteFetchAsDba</code> command to read rows for demonstration purposes only. It is not recommended for daily operations since queries are executed with SUPER rights and e.g. can insert data on a read-only slave.</p>
 
-<p>Throughout the tutorial many steps are marked as &quot;optional&quot; or meant for verification only. They are not relevant for the pivot process. However, they help to explain what is happening under the hood e.g. that a tablet did catch up to the latest GTID.</p>
+<p>Throughout the tutorial many steps are marked as &quot;optional&quot; or meant for verification only (e.g. looking at the GTIDs with <code class="prettyprint">vtctl ShardReplicationPositions</code>). They are not relevant for the pivot process. However, they help to explain what is happening under the hood e.g. that a tablet did catch up to the latest GTID.</p>
 
 <h2 id="pivot-steps">Pivot Steps</h2>
 
@@ -324,7 +324,7 @@ Starting port forwarding to vtctld...
 
 <h3 id="apply-the-schema-to-an-offline-tablet">Apply the schema to an offline tablet</h3>
 
-<p>Let&#39;s take the <em>rdonly</em> tablet with the ID 104 offline and apply the change there:</p>
+<p>Let&#39;s take the <em>rdonly</em> tablet with the ID 104 offline and apply the changes there:</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh StopSlave <span class="nb">test</span>-0000000104
 Starting port forwarding to vtctld...
 </code></pre></div>
@@ -379,7 +379,9 @@ Starting port forwarding to vtctld...
 </code></pre></div>
 <p>Note that the tablet with the ID 104 is lagging behind by one transaction now (8 instead of 9) because we stopped replication on it.</p>
 
-<p>Apply the schema change on the <em>rdonly</em> tablet. We&#39;ll add the column <code class="prettyprint">views</code> to the <code class="prettyprint">messages</code> table.</p>
+<p>Apply a schema change on the <em>rdonly</em> tablet. We&#39;ll add the column <code class="prettyprint">views</code> to the <code class="prettyprint">messages</code> table.</p>
+
+<p>Since the tablet is a slave and read-only, we will have to use <code class="prettyprint">ExecuteFetchAsDba</code> to execute the SQL statement with SUPER rights.</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ExecuteFetchAsDba -disable_binlogs <span class="nb">test</span>-0000000104 <span class="s2">&quot;ALTER TABLE messages ADD views BIGINT(20) UNSIGNED NULL&quot;</span>
 Starting port forwarding to vtctld...
 +
