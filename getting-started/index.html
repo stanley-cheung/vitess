@@ -483,7 +483,7 @@ so you may want to run it in a separate terminal.</p>
 <p>You can also use this proxy to access the <a href="http://kubernetes.io/v1.1/docs/user-guide/ui.html">Kubernetes Dashboard</a>,
 where you can monitor nodes, pods, and services:</p>
 
-<p><a href="http://localhost:8001/api/v1/proxy/namespaces/kube-system/services/kube-ui/">http://localhost:8001/api/v1/proxy/namespaces/kube-system/services/kube-ui/</a></p></li>
+<p><a href="http://localhost:8001/ui">http://localhost:8001/ui</a></p></li>
 <li><p><strong>Use vtctlclient to send commands to vtctld</strong></p>
 
 <p>You can now run <code class="prettyprint">vtctlclient</code> locally to issue commands
@@ -773,6 +773,7 @@ command to check the pod output:</p>
 <span class="nv">$ </span>kubectl logs vttablet-100 vttablet
 
 <span class="c"># show logs for container &#39;mysql&#39; within pod &#39;vttablet-100&#39;</span>
+<span class="c"># Note that this is NOT MySQL error log.</span>
 <span class="nv">$ </span>kubectl logs vttablet-100 mysql
 </code></pre></div>
 <p>Post the logs somewhere and send a link to the <a href="https://groups.google.com/forum/#!forum/vitess">Vitess
@@ -831,17 +832,11 @@ simple queries or commands through <code class="prettyprint">vtctlclient</code> 
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c"># Send a query to tablet 100 in cell &#39;test&#39;.</span>
 vitess/examples/kubernetes<span class="nv">$ </span>./kvtctl.sh ExecuteFetchAsDba <span class="nb">test</span>-0000000100 <span class="s2">&quot;SELECT VERSION()&quot;</span>
 <span class="c">### example output:</span>
-<span class="c"># {</span>
-<span class="c">#   &quot;Fields&quot;: null,</span>
-<span class="c">#   &quot;RowsAffected&quot;: 1,</span>
-<span class="c">#   &quot;InsertId&quot;: 0,</span>
-<span class="c">#   &quot;Rows&quot;: [</span>
-<span class="c">#     [</span>
-<span class="c">#       &quot;10.0.20-MariaDB-1~wheezy-log&quot;</span>
-<span class="c">#     ]</span>
-<span class="c">#   ],</span>
-<span class="c">#   &quot;Err&quot;: null</span>
-<span class="c"># }</span>
+<span class="c"># +------------+</span>
+<span class="c"># | VERSION()  |</span>
+<span class="c"># +------------+</span>
+<span class="c"># | 5.7.13-log |</span>
+<span class="c"># +------------+</span>
 </code></pre></div>
 <p>If you need a truly direct connection to mysqld, you can <a href="#shell-access">launch a shell</a> inside the mysql container, and then connect with the <code class="prettyprint">mysql</code>
 command-line client:</p>
