@@ -1205,21 +1205,6 @@
 <td style="text-align: left">Duration</td>
 <td style="text-align: left">Connection timeout for vttablet client</td>
 </tr>
-<tr>
-<td style="text-align: left">keyspace</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">keyspace the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">shard</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">shard the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">tablet_type</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet</td>
-</tr>
 </tbody></table>
 
 <h4 id="arguments">Arguments</h4>
@@ -1260,21 +1245,6 @@
 <td style="text-align: left">connect_timeout</td>
 <td style="text-align: left">Duration</td>
 <td style="text-align: left">Connection timeout for vttablet client</td>
-</tr>
-<tr>
-<td style="text-align: left">keyspace</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">keyspace the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">shard</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">shard the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">tablet_type</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 </tbody></table>
 
@@ -1323,21 +1293,6 @@
 <td style="text-align: left">Output JSON instead of human-readable table</td>
 </tr>
 <tr>
-<td style="text-align: left">keyspace</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">keyspace the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">shard</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">shard the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">tablet_type</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet</td>
-</tr>
-<tr>
 <td style="text-align: left">transaction_id</td>
 <td style="text-align: left">Int</td>
 <td style="text-align: left">transaction id to use, if inside a transaction.</td>
@@ -1383,21 +1338,6 @@
 <td style="text-align: left">connect_timeout</td>
 <td style="text-align: left">Duration</td>
 <td style="text-align: left">Connection timeout for vttablet client</td>
-</tr>
-<tr>
-<td style="text-align: left">keyspace</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">keyspace the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">shard</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">shard the tablet belongs to</td>
-</tr>
-<tr>
-<td style="text-align: left">tablet_type</td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">tablet type we expect from the tablet</td>
 </tr>
 </tbody></table>
 
@@ -1599,7 +1539,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">ApplySchema [-allow_long_unavailability] {-sql=&lt;sql&gt; || -sql-file=&lt;filename&gt;} &lt;keyspace&gt;</pre>
+<pre class="command-example">ApplySchema [-allow_long_unavailability] [-wait_slave_timeout=10s] {-sql=&lt;sql&gt; || -sql-file=&lt;filename&gt;} &lt;keyspace&gt;</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -1628,7 +1568,7 @@
 <tr>
 <td style="text-align: left">wait_slave_timeout</td>
 <td style="text-align: left">Duration</td>
-<td style="text-align: left">The amount of time to wait for slaves to catch up during reparenting. The default value is 30 seconds.</td>
+<td style="text-align: left">The amount of time to wait for slaves to receive the schema change via replication.</td>
 </tr>
 </tbody></table>
 
@@ -1646,7 +1586,7 @@
 
 <h3 id="applyvschema">ApplyVSchema</h3>
 
-<p>Applies the VTGate routing schema to the provided keyspace.</p>
+<p>Applies the VTGate routing schema to the provided keyspace. Shows the result after application.</p>
 
 <h4 id="example">Example</h4>
 
@@ -1702,7 +1642,7 @@
 
 <h4 id="example">Example</h4>
 
-<pre class="command-example">CopySchemaShard [-tables=&lt;table1&gt;,&lt;table2&gt;,...] [-exclude_tables=&lt;table1&gt;,&lt;table2&gt;,...] [-include-views] {&lt;source keyspace/shard&gt; || &lt;source tablet alias&gt;} &lt;destination keyspace/shard&gt;</pre>
+<pre class="command-example">CopySchemaShard [-tables=&lt;table1&gt;,&lt;table2&gt;,...] [-exclude_tables=&lt;table1&gt;,&lt;table2&gt;,...] [-include-views] [-wait_slave_timeout=10s] {&lt;source keyspace/shard&gt; || &lt;source tablet alias&gt;} &lt;destination keyspace/shard&gt;</pre>
 
 <h4 id="flags">Flags</h4>
 
@@ -1727,6 +1667,11 @@
 <td style="text-align: left">tables</td>
 <td style="text-align: left">string</td>
 <td style="text-align: left">Specifies a comma-separated list of regular expressions for which tables  gather schema information for</td>
+</tr>
+<tr>
+<td style="text-align: left">wait_slave_timeout</td>
+<td style="text-align: left">Duration</td>
+<td style="text-align: left">The amount of time to wait for slaves to receive the schema change via replication.</td>
 </tr>
 </tbody></table>
 
