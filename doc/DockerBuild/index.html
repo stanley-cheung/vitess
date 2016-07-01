@@ -251,32 +251,39 @@ which you can do by <a href="https://docs.docker.com/engine/installation/linux/u
 <li><p>Create an account on <a href="https://docs.docker.com/docker-hub/">Docker Hub</a> and
 then <code class="prettyprint">docker login</code> to it.</p></li>
 <li><p>Go to your <code class="prettyprint">github.com/youtube/vitess</code> directory.</p></li>
-<li><p>Build the <code class="prettyprint">vitess/base</code> image from your working copy.
-This image will incorporate any local code changes you&#39;ve made,
-such as adding plugins.</p>
-
-<p>You can choose one of the following flavors:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>make docker_base         <span class="c"># MySQL Community Edition</span>
-vitess<span class="nv">$ </span>make docker_base_percona <span class="c"># Percona Server</span>
-vitess<span class="nv">$ </span>make docker_base_mariadb <span class="c"># MariaDB</span>
-</code></pre></div>
-<p><strong>Note:</strong> If you don&#39;t have a <code class="prettyprint">vitess/bootstrap:&lt;flavor&gt;</code> image built,
-Docker will download our bootstrap image from Docker Hub.
-Usually, you won&#39;t need to <a href="https://github.com/youtube/vitess/blob/master/docker/bootstrap/README.md">build your own bootstrap image</a>
+<li><p>Usually, you won&#39;t need to <a href="https://github.com/youtube/vitess/blob/master/docker/bootstrap/README.md">build your own bootstrap image</a>
 unless you edit <a href="https://github.com/youtube/vitess/blob/master/bootstrap.sh">bootstrap.sh</a>
 or <a href="https://github.com/youtube/vitess/blob/master/vendor/vendor.json">vendor.json</a>,
-for example to add new dependencies.</p></li>
-<li><p>Build the <code class="prettyprint">vitess/lite</code> image from the <code class="prettyprint">vitess/base</code> image you built.
-This runs a script that extracts only the files needed to run Vitess,
-whereas <code class="prettyprint">vitess/base</code> contains everything needed for development work.
-You will be asked to authenticate with <code class="prettyprint">sudo</code>, which is needed to fix up
-some file permissions.</p>
+for example to add new dependencies. If you do need it then build the
+bootstrap image, otherwise pull the image using one of the following
+commands depending on the MySQL flavor you want:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>docker pull vitess/bootstrap:mysql57 <span class="c"># MySQL Community Edition 5.7</span>
+vitess<span class="nv">$ </span>docker pull vitess/bootstrap:mysql56 <span class="c"># MySQL Community Edition 5.6</span>
+vitess<span class="nv">$ </span>docker pull vitess/bootstrap:percona <span class="c"># Percona Server</span>
+vitess<span class="nv">$ </span>docker pull vitess/bootstrap:mariadb <span class="c"># MariaDB</span>
+</code></pre></div>
+<p><strong>Note:</strong> If you have already downloaded the <code class="prettyprint">vitess/bootstrap:&lt;flavor&gt;</code>
+image on your machine before then it could be old, which may cause build
+failures. So it would be a good idea to always execute this step.</p></li>
+<li><p>Build the <code class="prettyprint">vitess/lite[:&lt;flavor&gt;]</code> image. This will build
+<code class="prettyprint">vitess/base[:&lt;flavor&gt;]</code> image and run a script that extracts only the files
+needed to run Vitess (<code class="prettyprint">vitess/base</code> contains everything needed for
+development work). You will be asked to authenticate with <code class="prettyprint">sudo</code>, which is
+needed to fix up some file permissions.</p>
+
+<p>Choose one of the following commands (the command without suffix builds
+default image containing MySQL 5.7):</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>make docker_lite
+vitess<span class="nv">$ </span>make docker_lite_mysql56
+vitess<span class="nv">$ </span>make docker_lite_percona
+vitess<span class="nv">$ </span>make docker_lite_mariadb
 </code></pre></div></li>
 <li><p>Re-tag the image under your personal repository, then upload it.</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess<span class="nv">$ </span>docker tag -f vitess/lite yourname/vitess
 vitess<span class="nv">$ </span>docker push yourname/vitess
-</code></pre></div></li>
+</code></pre></div>
+<p><strong>Note:</strong> If you chose non-default flavor above then change <code class="prettyprint">vitess/lite</code> in
+the above command to <code class="prettyprint">vitess/lite:&lt;flavor&gt;</code>.</p></li>
 <li><p>Change the Kubernetes configs to point to your personal repository:</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">vitess/examples/kubernetes<span class="nv">$ </span>sed -i -e <span class="s1">&#39;s,image: vitess/lite,image: yourname/vitess:latest,&#39;</span> *.yaml
 </code></pre></div>
